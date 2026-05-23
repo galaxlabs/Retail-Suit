@@ -39,7 +39,7 @@ if (!API_BASE_URL && isVercelHost) {
 }
 
 // Browser should use session cookies by default.
-const USE_BROWSER_TOKEN_AUTH = import.meta.env.VITE_USE_API_TOKEN === 'true'
+const USE_BROWSER_TOKEN_AUTH = import.meta.env.VITE_USE_API_TOKEN !== 'false'
 
 const getAuthHeader = () => {
   if (!USE_BROWSER_TOKEN_AUTH) return null

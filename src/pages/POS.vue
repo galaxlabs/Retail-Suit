@@ -675,7 +675,7 @@ const isDark = computed(() => settingsStore.settings.appearance.theme === 'dark'
     // Initialize on mount
     onMounted(async () => {
         const currentUserInfo = await shiftStore.getCurrentUserInfo()
-        const currentUser = currentUserInfo.user
+        const currentUser = currentUserInfo?.user || null
         user.value = currentUser
         await shiftStore.loadShifts()
         await shiftStore.checkActiveShift()

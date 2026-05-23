@@ -116,6 +116,11 @@ export const useShiftStore = defineStore('shift', {
       try {
 
         const CurrentUserInfo = await getCurrentUserInfoApi()
+        if (!CurrentUserInfo || !CurrentUserInfo.user) {
+          this.CurrentUserInfo = null
+          return null
+        }
+
         console.log("CurrentUserInfo", CurrentUserInfo)
         console.log("CurrentUserInfo of name", CurrentUserInfo.user)
         console.log("CurrentUserInfo of user", CurrentUserInfo.user)
@@ -130,7 +135,15 @@ export const useShiftStore = defineStore('shift', {
     async checkActiveShift() {
       try {
         const currentUserInfo = await this.getCurrentUserInfo()
-        const currentUser = currentUserInfo.user
+        const currentUser = currentUserInfo?.user
+        if (!currentUser) {
+          this.pos_opening_shift = null
+          this.currentShift = null
+          this.isShiftOpen = false
+          this.showOpeningVoucherDialog = true
+          return false
+        }
+
         const result = await get_user_opening_shift(currentUser);
 
         if (result) {
