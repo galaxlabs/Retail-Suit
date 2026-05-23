@@ -1,0 +1,366 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Retail Suite User Guide</title>
+  <style>
+    :root {
+      color-scheme: light;
+      --bg: #f6f7f9;
+      --panel: #ffffff;
+      --ink: #1f2933;
+      --muted: #667085;
+      --line: #d9dee7;
+      --brand: #0f766e;
+      --brand-dark: #115e59;
+      --code: #eef4f3;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      font-family: Arial, Helvetica, sans-serif;
+      line-height: 1.55;
+      color: var(--ink);
+      background: var(--bg);
+    }
+
+    header {
+      background: var(--panel);
+      border-bottom: 1px solid var(--line);
+      padding: 32px 24px;
+    }
+
+    main {
+      max-width: 1040px;
+      margin: 0 auto;
+      padding: 28px 24px 56px;
+    }
+
+    h1,
+    h2,
+    h3 {
+      line-height: 1.25;
+      margin: 0 0 12px;
+    }
+
+    h1 {
+      font-size: 32px;
+    }
+
+    h2 {
+      font-size: 22px;
+      margin-top: 28px;
+      padding-top: 20px;
+      border-top: 1px solid var(--line);
+    }
+
+    h3 {
+      font-size: 17px;
+      margin-top: 20px;
+    }
+
+    p {
+      margin: 0 0 12px;
+    }
+
+    a {
+      color: var(--brand-dark);
+      font-weight: 700;
+    }
+
+    code {
+      background: var(--code);
+      border: 1px solid #d6e4e1;
+      border-radius: 5px;
+      padding: 2px 5px;
+      font-family: Consolas, Monaco, monospace;
+      font-size: 0.95em;
+    }
+
+    pre {
+      overflow: auto;
+      background: #111827;
+      color: #f9fafb;
+      border-radius: 8px;
+      padding: 16px;
+    }
+
+    pre code {
+      background: transparent;
+      border: 0;
+      color: inherit;
+      padding: 0;
+    }
+
+    ul,
+    ol {
+      margin: 0 0 16px 22px;
+      padding: 0;
+    }
+
+    li {
+      margin: 6px 0;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin: 14px 0 20px;
+      background: var(--panel);
+    }
+
+    th,
+    td {
+      border: 1px solid var(--line);
+      padding: 10px;
+      text-align: left;
+      vertical-align: top;
+    }
+
+    th {
+      background: #eef2f6;
+    }
+
+    .wrap {
+      max-width: 1040px;
+      margin: 0 auto;
+    }
+
+    .lead {
+      max-width: 760px;
+      color: var(--muted);
+      font-size: 16px;
+    }
+
+    .card {
+      background: var(--panel);
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      padding: 18px;
+      margin: 16px 0;
+    }
+
+    .note {
+      border-left: 4px solid var(--brand);
+      background: #edf8f6;
+      padding: 12px 14px;
+      margin: 14px 0;
+    }
+
+    .status {
+      display: inline-block;
+      border-radius: 999px;
+      background: #dcfce7;
+      color: #166534;
+      padding: 4px 10px;
+      font-size: 13px;
+      font-weight: 700;
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <div class="wrap">
+      <p class="status">Retail Suite POS</p>
+      <h1>Retail Suite User Guide</h1>
+      <p class="lead">Guide for using the Vercel-hosted Retail Suite frontend with the Frappe backend at GMX.</p>
+    </div>
+  </header>
+
+  <main>
+    <section class="card">
+      <h2>Live Links</h2>
+      <table>
+        <tr>
+          <th>Use</th>
+          <th>URL</th>
+        </tr>
+        <tr>
+          <td>Vercel frontend</td>
+          <td><a href="https://retail-suit-9m8v4xjft-galaxlabs-projects.vercel.app">https://retail-suit-9m8v4xjft-galaxlabs-projects.vercel.app</a></td>
+        </tr>
+        <tr>
+          <td>Frappe backend</td>
+          <td><a href="https://gmx.galaxylabs.online">https://gmx.galaxylabs.online</a></td>
+        </tr>
+        <tr>
+          <td>Frappe-hosted POS UI</td>
+          <td><a href="https://gmx.galaxylabs.online/retail_suite/login">https://gmx.galaxylabs.online/retail_suite/login</a></td>
+        </tr>
+      </table>
+      <div class="note">
+        Open the POS app from <code>/retail_suite/login</code> or the Vercel URL. Do not open files directly from <code>/assets/retail/retail_suite/</code>; that path is only for JavaScript, CSS, and images.
+      </div>
+    </section>
+
+    <section class="card">
+      <h2>Vercel Environment</h2>
+      <p>Add these variables in Vercel project settings under <strong>Settings &gt; Environment Variables</strong>.</p>
+      <table>
+        <tr>
+          <th>Name</th>
+          <th>Value</th>
+          <th>Purpose</th>
+        </tr>
+        <tr>
+          <td><code>VITE_API_BASE_URL</code></td>
+          <td><code>https://gmx.galaxylabs.online</code></td>
+          <td>Frappe API base URL.</td>
+        </tr>
+        <tr>
+          <td><code>VITE_SOCKET_URL</code></td>
+          <td><code>https://gmx.galaxylabs.online</code></td>
+          <td>Realtime/socket base URL.</td>
+        </tr>
+        <tr>
+          <td><code>VITE_SITE_NAME</code></td>
+          <td><code>gmx.galaxylabs.online</code></td>
+          <td>Frappe site name used by socket setup.</td>
+        </tr>
+        <tr>
+          <td><code>VITE_QZ_CERT_URL</code></td>
+          <td>Optional</td>
+          <td>Certificate endpoint for signed QZ Tray printing.</td>
+        </tr>
+        <tr>
+          <td><code>VITE_QZ_SIGNATURE_URL</code></td>
+          <td>Optional</td>
+          <td>Signature endpoint for signed QZ Tray printing.</td>
+        </tr>
+      </table>
+      <div class="note">
+        Do not put API secrets in <code>VITE_</code> variables. Vite builds those values into browser JavaScript, so users can inspect them.
+      </div>
+    </section>
+
+    <section class="card">
+      <h2>Login</h2>
+      <ol>
+        <li>Open the Vercel frontend URL.</li>
+        <li>Enter the Frappe user email and password.</li>
+        <li>After login, the app opens the POS screen.</li>
+      </ol>
+      <h3>Demo Cashier</h3>
+      <table>
+        <tr>
+          <th>User</th>
+          <th>Password</th>
+          <th>Profile</th>
+        </tr>
+        <tr>
+          <td><code>retail.gromax.cashier@example.com</code></td>
+          <td><code>Retail@123</code></td>
+          <td><code>Retail Demo POS - GROMAX</code></td>
+        </tr>
+      </table>
+      <p>If login fails, verify the user is enabled in Frappe and has access to the required company and POS Profile.</p>
+    </section>
+
+    <section class="card">
+      <h2>Open POS Shift</h2>
+      <ol>
+        <li>Login to the POS frontend.</li>
+        <li>Open the shift dialog.</li>
+        <li>Select the company.</li>
+        <li>Select the POS Profile.</li>
+        <li>Enter opening cash for each payment method.</li>
+        <li>Submit to create the POS Opening Shift.</li>
+      </ol>
+      <p>The app loads enabled POS Profiles from Frappe. If no profile appears, check that the POS Profile is enabled, belongs to the selected company, and has payment methods configured.</p>
+    </section>
+
+    <section class="card">
+      <h2>Sales Workflow</h2>
+      <ol>
+        <li>Open an active shift.</li>
+        <li>Add items to the cart.</li>
+        <li>Select or create the customer.</li>
+        <li>Review quantities, discounts, and totals.</li>
+        <li>Save or submit the invoice.</li>
+        <li>If auto-print is enabled, the receipt is sent to the configured terminal printer.</li>
+      </ol>
+    </section>
+
+    <section class="card">
+      <h2>Thermal Printing</h2>
+      <p>Retail Suite supports local USB printing through QZ Tray and network printing through ethernet printer settings.</p>
+      <h3>Printer Profile Fields</h3>
+      <ul>
+        <li><code>Terminal Name</code>: label for the cashier terminal.</li>
+        <li><code>Connection Type</code>: USB/QZ Tray or ethernet.</li>
+        <li><code>Printer Name</code>: local printer name for QZ Tray.</li>
+        <li><code>Host</code>: ethernet printer IP address.</li>
+        <li><code>Port</code>: ethernet printer port, commonly <code>9100</code>.</li>
+        <li><code>Paper Width</code>: usually <code>58</code> or <code>80</code> mm.</li>
+        <li><code>Copy Count</code>: number of receipt copies.</li>
+        <li><code>Auto Print</code>: print automatically after invoice save.</li>
+      </ul>
+      <div class="note">
+        For USB printing, install and run QZ Tray on the cashier computer. For production signed QZ printing, configure <code>VITE_QZ_CERT_URL</code> and <code>VITE_QZ_SIGNATURE_URL</code>.
+      </div>
+    </section>
+
+    <section class="card">
+      <h2>Close Shift</h2>
+      <ol>
+        <li>Open the close shift dialog from the POS controls.</li>
+        <li>Review expected amounts by payment method.</li>
+        <li>Enter the actual counted amount.</li>
+        <li>Submit the POS Closing Shift.</li>
+      </ol>
+      <p>Any difference between expected and counted cash should be reviewed by the cashier or manager before final submission.</p>
+    </section>
+
+    <section class="card">
+      <h2>GitHub and Vercel Deploy</h2>
+      <p>The standalone frontend source is in:</p>
+      <pre><code>/home/dg/retail-suite</code></pre>
+      <p>Push this repository to GitHub. Vercel should deploy from the source code on every push.</p>
+      <pre><code>cd /home/dg/retail-suite
+git status
+git push origin main</code></pre>
+      <p>Vercel build settings:</p>
+      <ul>
+        <li>Build command: <code>npm run build</code></li>
+        <li>Output directory: <code>dist</code></li>
+        <li>Install command: <code>npm install</code></li>
+      </ul>
+    </section>
+
+    <section class="card">
+      <h2>Troubleshooting</h2>
+      <table>
+        <tr>
+          <th>Problem</th>
+          <th>Check</th>
+        </tr>
+        <tr>
+          <td>Login page shows old errors</td>
+          <td>Hard refresh the browser with <code>Ctrl + Shift + R</code>. Confirm the page is not loading an old cached bundle.</td>
+        </tr>
+        <tr>
+          <td>Authentication error before login</td>
+          <td>The app should call <code>retail.retail.api.auth.get_logged_user</code>, not <code>frappe.auth.get_logged_user</code>.</td>
+        </tr>
+        <tr>
+          <td>No POS Profile appears</td>
+          <td>Confirm the profile is enabled, assigned to the correct company, and has at least one payment method.</td>
+        </tr>
+        <tr>
+          <td>Receipt does not print</td>
+          <td>Check QZ Tray is running for USB printers, or check IP/port for ethernet printers.</td>
+        </tr>
+        <tr>
+          <td>Vercel cannot reach Frappe</td>
+          <td>Check <code>VITE_API_BASE_URL</code>, CORS, login cookies, and that the backend URL is reachable over HTTPS.</td>
+        </tr>
+      </table>
+    </section>
+  </main>
+</body>
+</html>

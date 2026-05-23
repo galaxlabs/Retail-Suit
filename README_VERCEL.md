@@ -15,3 +15,4 @@
 - This is the standalone Vue frontend.
 - The app uses source code from GitHub and builds on each Vercel deployment.
 - Client routes rewrite to `index.html` through `vercel.json`.
+- User guide: `/docs/user-guide.html`
