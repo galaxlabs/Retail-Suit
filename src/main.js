@@ -39,7 +39,7 @@ if (!API_BASE_URL && isVercelHost) {
 }
 
 // Browser should use session cookies by default.
-const USE_BROWSER_TOKEN_AUTH = import.meta.env.VITE_USE_API_TOKEN === 'true'
+const USE_BROWSER_TOKEN_AUTH = (import.meta.env.VITE_USE_API_TOKEN === 'true') || (Boolean(API_BASE_URL) && (new URL(API_BASE_URL)).hostname !== window.location.hostname)
 
 const getAuthHeader = () => {
   if (!USE_BROWSER_TOKEN_AUTH) return null
@@ -54,8 +54,7 @@ const isPublicAuthEndpoint = (url = '') => {
   return normalized.includes('/api/method/ping') ||
     normalized.includes('/api/method/login') ||
     normalized.includes('/api/method/logout') ||
-    normalized.includes('/api/method/retail.retail.api.vercel_auth.token_login') ||
-    normalized.includes('/api/method/retail.retail.api.auth.get_logged_user')
+    normalized.includes('/api/method/retail.retail.api.vercel_auth.token_login')
 }
 
 const withAuthHeaders = (init = {}, url = '') => {
