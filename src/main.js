@@ -46,7 +46,18 @@ const getAuthHeader = () => {
   return apiKey && apiSecret ? 'token ' + apiKey + ':' + apiSecret : null
 }
 
-const withAuthHeaders = (init = {}) => {
+const isPublicAuthEndpoint = (url = '') => {
+  const normalized = String(url || '')
+  return normalized.includes('/api/method/ping') ||
+    normalized.includes('/api/method/login') ||
+    normalized.includes('/api/method/logout') ||
+    normalized.includes('/api/method/retail.retail.api.vercel_auth.token_login') ||
+    normalized.includes('/api/method/retail.retail.api.auth.get_logged_user')
+}
+
+const withAuthHeaders = (init = {}, url = '') => {
+  if (isPublicAuthEndpoint(url)) return init
+
   const authHeader = getAuthHeader()
   if (!authHeader) return init
 
@@ -65,11 +76,14 @@ const resolveResourceUrl = (url = '') => {
   return resolveBackendUrl('/api/method/' + url)
 }
 
-setConfig('resourceFetcher', (options) => frappeRequest({
-  ...options,
-  headers: withAuthHeaders({ headers: options.headers }).headers,
-  url: resolveResourceUrl(options.url),
-}))
+setConfig('resourceFetcher', (options) => {
+  const resolvedUrl = resolveResourceUrl(options.url)
+  return frappeRequest({
+    ...options,
+    headers: withAuthHeaders({ headers: options.headers }, resolvedUrl).headers,
+    url: resolvedUrl,
+  })
+})
 
 const originalFetch = window.fetch.bind(window)
 window.fetch = (input, init = {}) => {
@@ -86,7 +100,7 @@ window.fetch = (input, init = {}) => {
       return originalFetch(requestUrl, withAuthHeaders({
         ...init,
         credentials: init.credentials ?? "include",
-      })).catch((error) => {
+      }, requestUrl)).catch((error) => {
         console.error("[fetch] Backend request failed", {
           input,
           requestUrl,
@@ -104,6 +118,11 @@ window.fetch = (input, init = {}) => {
 axios.defaults.baseURL = config.FRAPPE_URL || axios.defaults.baseURL
 axios.defaults.withCredentials = true
 axios.interceptors.request.use((requestConfig) => {
+  const requestUrl = String(requestConfig?.url || '')
+  if (isPublicAuthEndpoint(requestUrl)) {
+    return requestConfig
+  }
+
   const authHeader = getAuthHeader()
   if (authHeader) {
     requestConfig.headers = requestConfig.headers || {}
