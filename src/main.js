@@ -33,6 +33,11 @@ const vuetify = createVuetify({
 })
 
 const app = createApp(App)
+const isVercelHost = /\.vercel\.app$/i.test(window.location.hostname)
+if (!API_BASE_URL && isVercelHost) {
+  console.error("[config] Missing VITE_API_BASE_URL. API calls will fail on Vercel host:", window.location.hostname)
+}
+
 
 const getAuthHeader = () => {
   const apiKey = localStorage.getItem('api_key')
@@ -73,11 +78,23 @@ window.fetch = (input, init = {}) => {
     const isBackendUrl = API_BASE_URL && input.startsWith(API_BASE_URL + '/api/')
 
     if (isBackendPath || isBackendUrl) {
+      if (isBackendPath && !API_BASE_URL) {
+        console.error("[fetch] Missing VITE_API_BASE_URL for backend path:", input)
+      }
+
       const requestUrl = isBackendPath ? resolveBackendUrl(input) : input
       return originalFetch(requestUrl, withAuthHeaders({
         ...init,
-        credentials: init.credentials ?? 'include',
-      }))
+        credentials: init.credentials ?? "include",
+      })).catch((error) => {
+        console.error("[fetch] Backend request failed", {
+          input,
+          requestUrl,
+          apiBaseUrl: API_BASE_URL || null,
+          message: error?.message || String(error),
+        })
+        throw error
+      })
     }
   }
 
