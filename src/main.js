@@ -108,6 +108,15 @@ setTimeout(async () => {
 function initializeSocketLazy() {
   requestIdleCallback(() => {
     try {
+      const enableSocket = import.meta.env.VITE_ENABLE_SOCKET !== 'false'
+      const backendHost = API_BASE_URL ? new URL(API_BASE_URL).hostname : ''
+      const frontendHost = window.location.hostname
+      const isCrossHost = backendHost && backendHost !== frontendHost
+
+      if (!enableSocket || isCrossHost) {
+        return
+      }
+
       const siteName = import.meta.env.VITE_SITE_NAME || window.location.hostname
 
       if (!window.frappe) window.frappe = {}
