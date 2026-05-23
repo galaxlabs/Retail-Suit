@@ -32,9 +32,26 @@
             boxShadow: 'var(--content-panel-shadow)'
           }"
         >
-          <div class="mb-4">
+          <div class="mb-4 space-y-3">
+            <div class="inline-flex rounded-lg p-1" style="background: var(--item-bg); border: 1px solid var(--item-border);">
+              <button
+                @click="switchSalesChannel('retail')"
+                class="px-4 py-2 text-sm font-medium rounded-md transition"
+                :style="salesChannel === 'retail' ? `background: ${primaryColor}; color: #fff;` : 'color: var(--text-main);'"
+              >
+                Retail
+              </button>
+              <button
+                @click="switchSalesChannel('wholesale')"
+                class="px-4 py-2 text-sm font-medium rounded-md transition"
+                :style="salesChannel === 'wholesale' ? `background: ${primaryColor}; color: #fff;` : 'color: var(--text-main);'"
+              >
+                Wholesale
+              </button>
+            </div>
             <input
               v-model="searchKeyword"
+              @keydown.enter.prevent="handleScannerEnter"
               type="text"
               class="w-full h-12 rounded-xl px-4 text-base"
               style="background: var(--input-bg); color: var(--input-text); border: 1px solid var(--input-border);"
@@ -59,6 +76,8 @@
           <Cart
             :mode="activeMenu === 'return' ? 'return' : 'sale'"
             :selected-invoice="selectedInvoice"
+            :sales-channel="salesChannel"
+            :customer-required="salesChannel === 'wholesale'"
             @submit="handleCartSubmit"
             @clear-invoice="handleClearInvoice"
           />
@@ -163,7 +182,6 @@ import { createResource } from 'frappe-ui'
 import { storeToRefs } from 'pinia'
 import ShiftControl from '@/components/shift/ShiftControl.vue'
 import Sidebar from '@/layout/Sidebar.vue'
-import SearchBar from '@/layout/SearchBar.vue'
 import ProductGrid from '@/components/products/ProductGrid.vue'
 import Cart from '@/components/cart/Cart.vue'
 import FirstTimeModal from '@/components/modals/FirstTimeModal.vue'
@@ -198,6 +216,95 @@ const invoicesStore = useInvoicesStore()
 const returnInvoice = ref(null)
 const mode = ref('sale')
 const showReturnInvoiceBox = ref(false)
+const SALES_CHANNEL_KEY = "retail_sales_channel_mode"
+const salesChannel = ref(localStorage.getItem(SALES_CHANNEL_KEY) || "retail")
+
+const normalizeBarcode = (value) => String(value || "").trim().toLowerCase()
+
+const extractBarcodes = (product) => {
+  const direct = [product.barcode, product.item_code]
+  const fromItemBarcode = Array.isArray(product.item_barcode)
+    ? product.item_barcode.map((b) => b?.barcode)
+    : []
+  const fromBarcodes = Array.isArray(product.barcodes)
+    ? product.barcodes.map((b) => b?.barcode)
+    : []
+
+  return [...direct, ...fromItemBarcode, ...fromBarcodes]
+    .map((code) => normalizeBarcode(code))
+    .filter(Boolean)
+}
+
+const handleScannerEnter = async () => {
+  const query = normalizeBarcode(searchKeyword.value)
+  if (!query) return
+
+  const items = productsStore.products || []
+  const exact = items.find((product) => extractBarcodes(product).includes(query))
+
+  if (exact) {
+    cartStore.addToCart(exact)
+    searchKeyword.value = ""
+    window.$toast?.success(`Added ${exact.item_name}`)
+    return
+  }
+
+  if (query.length >= 2) {
+    await productsStore.loadProductsFromFrappeDB()
+    const refreshed = (productsStore.products || []).find((product) => extractBarcodes(product).includes(query))
+    if (refreshed) {
+      cartStore.addToCart(refreshed)
+      searchKeyword.value = ""
+      window.$toast?.success(`Added ${refreshed.item_name}`)
+    } else {
+      window.$toast?.warning("No product found for this barcode")
+    }
+  }
+}
+
+
+const resolvePriceListForChannel = (channel) => {
+  const available = (productsStore.priceLists || []).map((p) =>
+    typeof p === "string" ? p : (p.name || p.price_list_name || "")
+  ).filter(Boolean)
+
+  const fallback = shiftStore.pos_profile?.selling_price_list || productsStore.selectedPriceList || "Standard Selling"
+  if (!available.length) return fallback
+
+  if (channel === "wholesale") {
+    return available.find((name) => /whole|dealer|trade|b2b/i.test(name)) || fallback
+  }
+
+  return available.find((name) => /retail|pos|standard/i.test(name)) || fallback
+}
+
+const applySalesChannel = async (channel) => {
+  salesChannel.value = channel
+  localStorage.setItem(SALES_CHANNEL_KEY, channel)
+
+  if (!productsStore.priceLists?.length) {
+    await productsStore.loadFilterOptions()
+  }
+
+  const nextPriceList = resolvePriceListForChannel(channel)
+  productsStore.selectedPriceList = nextPriceList
+  productsStore.selectedPriceList = nextPriceList
+
+  if (channel === "wholesale") {
+    shiftStore.setCustomer(null)
+  } else {
+    const defaultCustomer = shiftStore.pos_profile?.customer
+    if (defaultCustomer) {
+      shiftStore.setCustomer({ name: defaultCustomer })
+    }
+  }
+  await productsStore.loadProductsFromFrappeDB()
+}
+
+const switchSalesChannel = async (channel) => {
+  if (salesChannel.value === channel) return
+  await applySalesChannel(channel)
+}
 
 const settingsStore = useSettingsStore()
 // Dark Mode from Settings Store
@@ -572,7 +679,8 @@ const isDark = computed(() => settingsStore.settings.appearance.theme === 'dark'
         user.value = currentUser
         await shiftStore.loadShifts()
         await shiftStore.checkActiveShift()
-        await loadProductsData()
+        await productsStore.loadFilterOptions()
+        await applySalesChannel(salesChannel.value)
         isCheckingShift.value = false
         settingsStore.loadSettings()
     })

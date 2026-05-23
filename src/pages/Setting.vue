@@ -771,6 +771,22 @@
                 </div>
               </div>
 
+                <div class="space-y-2 pt-4" style="border-top: 1px solid var(--divider);">
+                  <label class="block text-sm font-medium" style="color: var(--text-sub)">
+                    Time Zone
+                  </label>
+                  <select
+                    v-model="settings.system.timeZone"
+                    class="w-full px-4 py-2 rounded-lg transition"
+                    style="background: var(--select-bg); border: 1px solid var(--select-border); color: var(--text-main);"
+                  >
+                    <option value="Asia/Karachi">Asia/Karachi (PKT)</option>
+                    <option value="Asia/Dubai">Asia/Dubai (GST)</option>
+                    <option value="Asia/Riyadh">Asia/Riyadh (AST)</option>
+                    <option value="UTC">UTC</option>
+                  </select>
+                </div>
+
               <!-- Data Management -->
               <div class="pt-6" style="border-top: 1px solid var(--divider);">
                 <h3 class="text-lg font-semibold mb-4" style="color: var(--text-main)">

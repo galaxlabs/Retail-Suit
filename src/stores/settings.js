@@ -9,6 +9,7 @@ const ALLOWED_CURRENCIES = [
   { code: "EGP", label: "Egyptian Pound", symbol: "E£", locale: "en-EG" },
   { code: "AED", label: "UAE Dirham", symbol: "د.إ", locale: "en-AE" },
   { code: "GBP", label: "British Pound", symbol: "£", locale: "en-GB" },
+  { code: "PKR", label: "Pakistani Rupee", symbol: "Rs", locale: "en-PK" },
 ];
 
 const getCurrencyConfig = (currency) =>
@@ -57,6 +58,7 @@ export const useSettingsStore = defineStore("settings", () => {
       autoPrint: true,
     },
     system: {
+      timeZone: Intl.DateTimeFormat().resolvedOptions().timeZone || 'Asia/Karachi',
       autoBackup: true,
       soundEffects: true,
       showScannerStatus: true,

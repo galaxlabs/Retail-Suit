@@ -9,6 +9,7 @@
  */
 
 import { useShiftStore } from "../stores/shift"
+import { useSettingsStore } from "../stores/settings"
 
 export const formatDuration = (startTime, endTime) => {
   const start = new Date(startTime)
@@ -27,6 +28,7 @@ export const formatDuration = (startTime, endTime) => {
 export const formatPrice = (price, currency) => {
   try {
     const shiftStore = useShiftStore()
+    const settingsStore = useSettingsStore()
     const currentCurrency = currency || shiftStore?.pos_profile?.currency || 'SAR'
 
     const currencyMap = {
@@ -34,7 +36,8 @@ export const formatPrice = (price, currency) => {
       'USD': { locale: 'en-US', symbol: '$' },
       'EGP': { locale: 'en-EG', symbol: 'E£' },
       'AED': { locale: 'en-AE', symbol: 'د.إ' },
-      'GBP': { locale: 'en-GB', symbol: '£' }
+      'GBP': { locale: 'en-GB', symbol: '£' },
+      'PKR': { locale: 'en-PK', symbol: 'Rs' }
     }
 
 
@@ -105,13 +108,13 @@ export const formatDate = (date, options = {}) => {
     hour: '2-digit',
     minute: '2-digit',
     hour12: true,
-    timeZone: 'Africa/Cairo'
+    timeZone: settingsStore?.settings?.system?.timeZone || Intl.DateTimeFormat().resolvedOptions().timeZone || 'UTC'
   }
 
   const formatOptions = { ...defaultOptions, ...options }
 
   try {
-    const locale = options.locale || 'en-EG'
+    const locale = options.locale || settingsStore?.settings?.store?.locale || 'en-US'
     return new Date(date).toLocaleDateString(locale, formatOptions)
   } catch (error) {
     console.error('Error formatting date:', error)
@@ -370,7 +373,8 @@ export const get_currency_symbol = (currency) => {
     USD: '$',
     SAR: '﷼',
     AED: 'د.إ',
-    GBP: '£'
+    GBP: '£',
+    PKR: 'Rs'
   };
 
   return symbols[currency] || currency; // fallback لو العملة مش موجودة

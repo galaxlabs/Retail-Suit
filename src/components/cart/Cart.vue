@@ -116,6 +116,9 @@
 
       <!-- Customer Selector -->
       <CustomerSection @customer-selected="handleCustomerSelected" />
+      <div class="px-4 pt-2 text-xs" :style="{ color: 'var(--text-muted)' }">
+        {{ salesChannel === 'wholesale' ? 'Wholesale: select customer before checkout' : 'Retail: customer optional for quick billing' }}
+      </div>
 
       <!-- Cart Items List -->
       <div class="flex-1 w-full px-4 overflow-auto">
@@ -164,12 +167,20 @@ import Swal from 'sweetalert2'
 const props = defineProps({
   mode: {
     type: String,
-    default: 'sale', // 'sale' or 'return'
+    default: 'sale',
     validator: (value) => ['sale', 'return'].includes(value)
   },
   selectedInvoice: {
     type: Object,
     default: null
+  },
+  salesChannel: {
+    type: String,
+    default: 'retail'
+  },
+  customerRequired: {
+    type: Boolean,
+    default: false
   }
 })
 const emit = defineEmits(['submit', 'cart-cleared', 'item-removed', 'clear-invoice'])
@@ -298,10 +309,9 @@ const handletransactionData = async (paymentData) => {
   console.log("   Received:", paymentData)
 
 
-  if (!shiftStore.$state.currentCustomer) {
-    console.log("❌ No customer selected")
+  if (props.customerRequired && !shiftStore.$state.currentCustomer) {
     if (window.$toast) {
-      window.$toast.warning('Please select a customer')
+      window.$toast.warning("Please select a customer for wholesale invoice")
     }
     return
   }

@@ -115,7 +115,10 @@ const filteredProducts = computed(() => {
       p.item_code?.toLowerCase().includes(kw) ||
       p.item_name?.toLowerCase().includes(kw) ||
       p.item_group?.toLowerCase().includes(kw) ||
-      p.description?.toLowerCase().includes(kw)
+      p.description?.toLowerCase().includes(kw) ||
+      p.barcode?.toLowerCase().includes(kw) ||
+      (Array.isArray(p.item_barcode) && p.item_barcode.some((b) => b?.barcode?.toLowerCase().includes(kw))) ||
+      (Array.isArray(p.barcodes) && p.barcodes.some((b) => b?.barcode?.toLowerCase().includes(kw)))
     )
   }
 
