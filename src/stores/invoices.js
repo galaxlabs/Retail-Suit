@@ -63,6 +63,15 @@ const normalizePayment = (summary = {}) => {
     return text || 'انوائس پراسیس نہيں ہو سکی۔ دوبارہ کوشش کریں۔'
   }
 
+  const resolveCustomerName = (shiftStore, salesChannel) => {
+    const selectedCustomer = shiftStore.currentCustomer?.name || null
+    if (selectedCustomer) return selectedCustomer
+    if (salesChannel === 'wholesale') {
+      throw new Error('ہول سیل فروخت کے لیے کسٹمر منتخب کرنا ضروری ہے۔')
+    }
+    return shiftStore.pos_profile?.customer || 'Walk-in Customer'
+  }
+
 
   /* ========================
      Getters (computed)
@@ -175,14 +184,15 @@ const normalizePayment = (summary = {}) => {
 
       if (!transactionData?.items?.length) throw new Error('Invalid transaction data - items missing')
       if (!shiftStore.pos_profile) throw new Error('POS Profile not loaded')
-      if (!shiftStore.currentCustomer) throw new Error('Customer not selected')
+      const salesChannel = transactionData.salesChannel || localStorage.getItem('retail_sales_channel_mode') || 'retail'
+      const customerName = resolveCustomerName(shiftStore, salesChannel)
 
       const { summary, paymentMethod, items, transactionId, mode } = transactionData
       const { paidAmount, totalAmount } = normalizePayment(summary)
       const invoicePayload = {
         "doctype": 'Sales Invoice',
         "name": transactionData.draftName || undefined,
-        "customer": shiftStore.currentCustomer.name,
+        "customer": customerName,
         "posting_date": new Date().toISOString().slice(0, 10),
         "pos_profile": shiftStore.pos_profile.name,
         "posa_pos_opening_shift": shiftStore.pos_opening_shift?.name,
@@ -244,6 +254,8 @@ const normalizePayment = (summary = {}) => {
   try {
     const shiftStore = useShiftStore()
     const { summary, paymentMethod, items } = transactionData
+    const salesChannel = transactionData.salesChannel || localStorage.getItem('retail_sales_channel_mode') || 'retail'
+    const customerName = resolveCustomerName(shiftStore, salesChannel)
     const { paidAmount } = normalizePayment(summary)
 
     const invoicePayload = {
@@ -252,7 +264,7 @@ const normalizePayment = (summary = {}) => {
       "is_pos": 1,
       "ignore_pricing_rule": 1,
       "company": shiftStore.pos_profile.company,
-      "customer": shiftStore.currentCustomer.name,
+      "customer": customerName,
       "posting_date": new Date().toISOString().slice(0, 10),
       "pos_profile": shiftStore.pos_profile.name,
       "payments": [{ mode_of_payment: paymentMethod, amount: paidAmount }],
@@ -294,6 +306,8 @@ const normalizePayment = (summary = {}) => {
     try {
       const shiftStore = useShiftStore()
       const { summary, paymentMethod, items, invoiceId } = receiptData
+      const salesChannel = receiptData.salesChannel || localStorage.getItem('retail_sales_channel_mode') || 'retail'
+      const customerName = resolveCustomerName(shiftStore, salesChannel)
       const { paidAmount, totalAmount } = normalizePayment(summary)
 
       const invoicePayload = {
@@ -303,7 +317,7 @@ const normalizePayment = (summary = {}) => {
         ignore_pricing_rule: 1,
         company: shiftStore.pos_profile.company,
         naming_series: shiftStore.pos_profile.naming_series,
-        customer: shiftStore.currentCustomer.name,
+        customer: customerName,
         posting_date: new Date().toISOString().slice(0, 10),
         pos_profile: shiftStore.pos_profile.name,
         paymentMethod: paymentMethod,
