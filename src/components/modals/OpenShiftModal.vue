@@ -278,7 +278,7 @@ import AlertIcon from '@/components/icons/AlertIcon.svg'
 
     // Computed properties
     const canSubmit = computed(() => {
-      if (!form.value.userId) return false
+      if (!company.value || !pos_profile.value) return false
       if (requireBalance.value && (!form.value.openingBalance || form.value.openingBalance < 0)) {
         return false
       }

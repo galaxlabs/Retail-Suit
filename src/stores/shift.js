@@ -351,9 +351,6 @@ export const useShiftStore = defineStore('shift', {
           if (this.isShiftOpen) {
             return { valid: false, message: 'There is already an open shift' }
           }
-          if (!data.userId) {
-            return { valid: false, message: 'User is required' }
-          }
           if (data.openingBalance < 0) {
             return { valid: false, message: 'Opening balance cannot be negative' }
           }
