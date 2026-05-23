@@ -78,7 +78,7 @@ const canSubmit = computed(() => username.value.length > 3 && password.value.len
 
 async function checkBackendHealth() {
   try {
-    const response = await fetch(resolveBackendUrl('/api/method/retail.retail.api.auth.get_logged_user'), {
+    const response = await fetch(resolveBackendUrl('/api/method/ping'), {
       method: 'GET',
       credentials: 'include',
     })
