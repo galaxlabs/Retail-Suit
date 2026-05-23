@@ -53,10 +53,17 @@ const withAuthHeaders = (init = {}) => {
   return { ...init, headers }
 }
 
+const resolveResourceUrl = (url = '') => {
+  if (!url || /^https?:\/\//i.test(url)) return url
+  if (url.startsWith('/')) return resolveBackendUrl(url)
+
+  return resolveBackendUrl('/api/method/' + url)
+}
+
 setConfig('resourceFetcher', (options) => frappeRequest({
   ...options,
   headers: withAuthHeaders({ headers: options.headers }).headers,
-  url: resolveBackendUrl(options.url),
+  url: resolveResourceUrl(options.url),
 }))
 
 const originalFetch = window.fetch.bind(window)
