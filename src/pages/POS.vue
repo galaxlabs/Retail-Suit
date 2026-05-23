@@ -263,19 +263,28 @@ const handleScannerEnter = async () => {
 }
 
 
+const RETAIL_PRICE_LIST_NAME = "Retail Selling"
+const WHOLESALE_PRICE_LIST_NAME = "Wholesale Selling"
+
 const resolvePriceListForChannel = (channel) => {
   const available = (productsStore.priceLists || []).map((p) =>
     typeof p === "string" ? p : (p.name || p.price_list_name || "")
   ).filter(Boolean)
 
   const fallback = shiftStore.pos_profile?.selling_price_list || productsStore.selectedPriceList || "Standard Selling"
-  if (!available.length) return fallback
-
-  if (channel === "wholesale") {
-    return available.find((name) => /whole|dealer|trade|b2b/i.test(name)) || fallback
+  if (!available.length) {
+    return channel === "wholesale" ? WHOLESALE_PRICE_LIST_NAME : RETAIL_PRICE_LIST_NAME
   }
 
-  return available.find((name) => /retail|pos|standard/i.test(name)) || fallback
+  if (channel === "wholesale") {
+    return available.includes(WHOLESALE_PRICE_LIST_NAME)
+      ? WHOLESALE_PRICE_LIST_NAME
+      : fallback
+  }
+
+  return available.includes(RETAIL_PRICE_LIST_NAME)
+    ? RETAIL_PRICE_LIST_NAME
+    : fallback
 }
 
 const applySalesChannel = async (channel) => {
