@@ -99,6 +99,7 @@ export const formatShortPrice = (price) => {
  * @returns {string} Formatted date string
  */
 export const formatDate = (date, options = {}) => {
+  const settingsStore = useSettingsStore()
   if (!date) return ''
 
   const defaultOptions = {
