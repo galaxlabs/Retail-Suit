@@ -38,8 +38,11 @@ if (!API_BASE_URL && isVercelHost) {
   console.error("[config] Missing VITE_API_BASE_URL. API calls will fail on Vercel host:", window.location.hostname)
 }
 
+// Browser should use session cookies by default.
+const USE_BROWSER_TOKEN_AUTH = import.meta.env.VITE_USE_API_TOKEN === 'true'
 
 const getAuthHeader = () => {
+  if (!USE_BROWSER_TOKEN_AUTH) return null
   const apiKey = localStorage.getItem('api_key')
   const apiSecret = localStorage.getItem('api_secret')
 
