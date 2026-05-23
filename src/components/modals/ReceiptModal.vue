@@ -336,7 +336,7 @@ const invoiceTemplateRef = ref(null)
         if (isProcessing.value) return
 
         if (!props.receiptData?.isSaved) {
-          alert('Please save the invoice first before printing.')
+          alert('پرنٹ سے پہلے براہِ کرم انوائس محفوظ کریں۔')
           return
         }
 
@@ -344,15 +344,13 @@ const invoiceTemplateRef = ref(null)
           isProcessing.value = true
           await nextTick()
 
-          try {
-            await printReceipt(props.receiptData, { force: true })
-          } catch (qzError) {
-            console.warn('QZ print failed, falling back to browser print:', qzError)
+          const printResult = await printReceipt(props.receiptData, { force: false })
+          if (printResult?.skipped) {
             await invoiceTemplateRef.value?.print()
           }
         } catch (error) {
           console.error('Print failed:', error)
-          alert('Print failed. Please try again.')
+          alert('پرنٹ ناکام ہوگیا۔ براہِ کرم دوبارہ کوشش کریں۔')
         } finally {
           setTimeout(() => {
             isProcessing.value = false

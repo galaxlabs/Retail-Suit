@@ -45,6 +45,24 @@ export const useInvoicesStore = defineStore('invoices', () => {
   const currentInvoice = ref(null)
   const cashiers = ref([])
   const selectedInvoice = ref(null)
+const normalizePayment = (summary = {}) => {
+    const totalAmount = Math.max(0, parseFloat(summary.total ?? 0) || 0)
+    const rawPaid = Math.max(0, parseFloat(summary.cash ?? 0) || 0)
+    const paidAmount = Math.min(rawPaid, totalAmount)
+    return { totalAmount, paidAmount }
+  }
+
+  const translateInvoiceError = (message = '') => {
+    const text = String(message || '')
+    if (
+      text.includes('المبلغ المدفوع أكبر من إجمالي الفاتورة') ||
+      text.includes('paid amount is greater than invoice total')
+    ) {
+      return 'ادا کی گئی رقم بل کے کل سے زیادہ ہے۔ براہ کرم رقم درست کریں۔'
+    }
+    return text || 'انوائس پراسیس نہيں ہو سکی۔ دوبارہ کوشش کریں۔'
+  }
+
 
   /* ========================
      Getters (computed)
@@ -160,9 +178,7 @@ export const useInvoicesStore = defineStore('invoices', () => {
       if (!shiftStore.currentCustomer) throw new Error('Customer not selected')
 
       const { summary, paymentMethod, items, transactionId, mode } = transactionData
-      const paidAmount  = parseFloat(summary.cash  ?? 0)
-      const totalAmount = parseFloat(summary.total ?? 0)
-
+      const { paidAmount, totalAmount } = normalizePayment(summary)
       const invoicePayload = {
         "doctype": 'Sales Invoice',
         "name": transactionData.draftName || undefined,
@@ -220,7 +236,7 @@ export const useInvoicesStore = defineStore('invoices', () => {
         message = resError.messages?.[0] || resError.message || message
       }
 
-      throw new Error(message)
+      throw new Error(translateInvoiceError(message))
     }
   }
 
@@ -228,8 +244,7 @@ export const useInvoicesStore = defineStore('invoices', () => {
   try {
     const shiftStore = useShiftStore()
     const { summary, paymentMethod, items } = transactionData
-    const paidAmount  = parseFloat(summary.cash  ?? 0)
-    const totalAmount = parseFloat(summary.total ?? 0)
+    const { paidAmount } = normalizePayment(summary)
 
     const invoicePayload = {
       "doctype": 'Sales Invoice',
@@ -271,7 +286,7 @@ export const useInvoicesStore = defineStore('invoices', () => {
     if (saveInvoiceResource.error) {
       message = saveInvoiceResource.error.messages?.[0] || message
     }
-    throw new Error(message)
+    throw new Error(translateInvoiceError(message))
   }
   }
 
@@ -279,12 +294,11 @@ export const useInvoicesStore = defineStore('invoices', () => {
     try {
       const shiftStore = useShiftStore()
       const { summary, paymentMethod, items, invoiceId } = receiptData
-      const paidAmount  = parseFloat(summary.cash  ?? 0)
-      const totalAmount = parseFloat(summary.total ?? 0)
+      const { paidAmount, totalAmount } = normalizePayment(summary)
 
       const invoicePayload = {
-        doctype: 'Sales Invoice',
         name: invoiceId,  // الـ draft name
+        doctype: 'Sales Invoice',
         is_pos: 1,
         ignore_pricing_rule: 1,
         company: shiftStore.pos_profile.company,
@@ -325,7 +339,7 @@ export const useInvoicesStore = defineStore('invoices', () => {
       if (submitInvoiceResource.error) {
         message = submitInvoiceResource.error.messages?.[0] || message
       }
-      throw new Error(message)
+      throw new Error(translateInvoiceError(message))
     }
   }
 

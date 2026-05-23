@@ -70,6 +70,7 @@ const resolvePrinterProfile = () => {
   const host = printer.host || "";
   const port = Number(printer.port ?? 9100) || 9100;
   const autoPrint = printer.autoPrint ?? printer.autoprint ?? true;
+  const useQzTray = printer.useQzTray ?? printer.qzEnabled ?? false;
 
   return {
     raw: printer,
@@ -80,6 +81,7 @@ const resolvePrinterProfile = () => {
     terminalName,
     host,
     port,
+    useQzTray,
     autoPrint,
   };
 };
@@ -220,7 +222,10 @@ export const printReceipt = async (receiptData, options = {}) => {
 
   const profile = resolvePrinterProfile();
   if (!options.force && profile.autoPrint === false) {
-    return { skipped: true, reason: "auto_print_disabled" };
+    return { skipped: true, reason: 'auto_print_disabled' };
+  }
+  if (!profile.useQzTray) {
+    return { skipped: true, reason: 'qz_disabled' };
   }
 
   setupQzSecurity();
