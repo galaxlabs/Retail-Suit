@@ -33,11 +33,17 @@
           }"
         >
           <div class="mb-4">
-            <SearchBar v-model="searchKeyword" />
+            <input
+              v-model="searchKeyword"
+              type="text"
+              class="w-full h-12 rounded-xl px-4 text-base"
+              style="background: var(--input-bg); color: var(--input-text); border: 1px solid var(--input-border);"
+              placeholder="Search item by name, code, or category"
+            />
           </div>
 
           <div class="flex-1 overflow-y-auto">
-            <ProductGrid :search-keyword="searchKeyword" />
+            <ProductGrid :search-keyword="searchKeyword" :simple-mode="true" />
           </div>
         </div>
 
