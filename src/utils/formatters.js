@@ -29,7 +29,7 @@ export const formatPrice = (price, currency) => {
   try {
     const shiftStore = useShiftStore()
     const settingsStore = useSettingsStore()
-    const currentCurrency = currency || shiftStore?.pos_profile?.currency || 'SAR'
+    const currentCurrency = currency || shiftStore?.pos_profile?.currency || settingsStore?.settings?.store?.currency || 'PKR'
 
     const currencyMap = {
       'SAR': { locale: 'en-SA', symbol: 'ر.س' },
@@ -54,7 +54,7 @@ export const formatPrice = (price, currency) => {
   } catch (error) {
     console.error('Error formatting price:', error)
     const safePrice = (price || 0).toLocaleString('en-US')
-    return `SAR ${safePrice}`
+    return String(currentCurrency || 'PKR') + ' ' + safePrice
   }
 }
 
