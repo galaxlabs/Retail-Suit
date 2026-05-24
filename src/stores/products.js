@@ -85,16 +85,20 @@ export const useProductsStore = defineStore('products', {
       try {
         console.log('========== Load Products ==========')
         const shiftStore = useShiftStore()
-        const hasActiveShift = await shiftStore.checkActiveShift()
+        const hasLocalShift = Boolean(shiftStore.pos_profile && shiftStore.pos_opening_shift)
+        const hasActiveShift = hasLocalShift ? true : await shiftStore.checkActiveShift()
 
         if (!hasActiveShift) {
           console.warn('⚠️ No active shift / POS Profile')
           return []
         }
 
-        const currentPOSProfile = shiftStore.pos_profile
+        const currentPOSProfile = shiftStore.pos_profile || {}
         const posProfileName    = currentPOSProfile.name
-        const currentPriceList  = this.selectedPriceList || currentPOSProfile.selling_price_list
+        const currentPriceList  =
+          this.selectedPriceList ||
+          currentPOSProfile.selling_price_list ||
+          "Standard Selling"
         const currentCustomer = currentPOSProfile.customer || ''
         const selectedWarehouse = this.selectedWarehouse || null  // null → backend uses pos_profile default
 

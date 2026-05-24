@@ -96,6 +96,9 @@
       <ReceiptModal
         v-if="showReceiptModal"
         :receipt-data="receiptData"
+        :store-name="settingsStore.settings?.store?.name || shiftStore.pos_profile?.company || 'Store'"
+        :store-address="settingsStore.settings?.store?.address || shiftStore.pos_profile?.warehouse || ''"
+        :store-logo="settingsStore.settings?.store?.logoUrl || ''"
         @close="closeReceiptModal"
         @proceed="handleReceiptPrinted"
         @save="handleReceiptSaved"
@@ -414,6 +417,10 @@ const isDark = computed(() => settingsStore.settings.appearance.theme === 'dark'
 
           receiptData.value = {
             ...transactionData,
+            storeName: settingsStore.settings?.store?.name || shiftStore.pos_profile?.company || "Store",
+            storeAddress: settingsStore.settings?.store?.address || shiftStore.pos_profile?.warehouse || "",
+            storeLogo: settingsStore.settings?.store?.logoUrl || "",
+            footerMessage: settingsStore.settings?.receipt?.footerMessage || "",
             invoiceNo: invoiceResponse.invoiceNo,
             invoiceId: invoiceResponse.invoiceNo,
             isFastMode: true,
@@ -425,6 +432,10 @@ const isDark = computed(() => settingsStore.settings.appearance.theme === 'dark'
 
           receiptData.value = {
             ...transactionData,
+            storeName: settingsStore.settings?.store?.name || shiftStore.pos_profile?.company || "Store",
+            storeAddress: settingsStore.settings?.store?.address || shiftStore.pos_profile?.warehouse || "",
+            storeLogo: settingsStore.settings?.store?.logoUrl || "",
+            footerMessage: settingsStore.settings?.receipt?.footerMessage || "",
             invoiceNo: invoiceResponse.name || transactionData.invoiceNo,
             invoiceId: invoiceResponse.name || transactionData.invoiceNo,
             isFastMode: false,
@@ -677,12 +688,13 @@ const isDark = computed(() => settingsStore.settings.appearance.theme === 'dark'
         const currentUserInfo = await shiftStore.getCurrentUserInfo()
         const currentUser = currentUserInfo?.user || null
         user.value = currentUser
+        settingsStore.loadSettings()
         await shiftStore.loadShifts()
         await shiftStore.checkActiveShift()
+        settingsStore.syncStoreIdentityFromCompany({}, shiftStore.pos_profile || {})
         await productsStore.loadFilterOptions()
         await applySalesChannel(salesChannel.value)
         isCheckingShift.value = false
-        settingsStore.loadSettings()
     })
 
 

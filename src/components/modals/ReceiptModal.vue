@@ -36,7 +36,7 @@
           <!-- Receipt Header -->
           <div class="text-center mb-4">
             <img
-              src="@/assets/img/receipt-logo.png"
+              :src="props.storeLogo || defaultLogo"
               alt="Tailwind POS"
               class="mb-3 w-8 h-8 inline-block"
               @error="handleLogoError"
@@ -214,6 +214,7 @@ import PrintIcon from '@/components/icons/PrintIcon.svg'
 import CheckIcon from '@/components/icons/CheckIcon.svg'
 import CloseIcon from '@/components/icons/CloseIcon.svg'
 import invoiceTemplate from './invoiceTemplate.vue';
+import defaultLogo from '@/assets/img/receipt-logo.png';
 const props = defineProps({
     receiptData: {
       type: Object,
@@ -221,15 +222,19 @@ const props = defineProps({
     },
     storeName: {
       type: String,
-      default: 'TAILWIND POS'
+      default: ''
     },
     storeAddress: {
       type: String,
-      default: 'CABANG KONOHA SELATAN'
+      default: ''
     },
     autoShow: {
       type: Boolean,
       default: true
+    },
+    storeLogo: {
+      type: String,
+      default: ""
     },
      isFastMode: {
       type: Boolean,

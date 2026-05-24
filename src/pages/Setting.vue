@@ -104,6 +104,23 @@
                     "
                   />
                 </div>
+                <!-- Store Logo URL -->
+                <div>
+                  <label class="block text-sm font-medium mb-2" style="color: var(--text-sub)">
+                    Store Logo URL
+                  </label>
+                  <input
+                    v-model="settings.store.logoUrl"
+                    type="text"
+                    placeholder="/files/company-logo.png or https://..."
+                    class="w-full px-4 py-2 rounded-lg transition"
+                    style="
+                      background: var(--input-bg);
+                      border: 1px solid var(--input-border);
+                      color: var(--text-main);
+                    "
+                  />
+                </div>
 
                 <!-- Address -->
                 <div>

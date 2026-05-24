@@ -167,7 +167,7 @@ const buildReceiptHtml = (receiptData, profile) => {
       <body>
         <div class="receipt">
           <div class="center">
-            <div style="font-size: 16px; font-weight: 700; text-transform: uppercase;">${receiptData?.storeName || "Tailwind POS"}</div>
+            <div style="font-size: 16px; font-weight: 700; text-transform: uppercase;">${receiptData?.storeName || "Store"}</div>
             <div class="muted" style="margin-top: 4px;">${receiptData?.storeAddress || ""}</div>
             <div class="muted">${profile.terminalName || "POS Terminal"}</div>
           </div>
@@ -265,8 +265,8 @@ export const printReceipt = async (receiptData, options = {}) => {
 };
 
 export const buildSampleReceipt = () => ({
-  storeName: "Tailwind POS",
-  storeAddress: "Cabang Konoha Selatan",
+  storeName: "Store",
+  storeAddress: "",
   invoiceNo: `TEST-${Date.now().toString().slice(-6)}`,
   timestamp: new Date().toISOString(),
   items: [

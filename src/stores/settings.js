@@ -20,8 +20,8 @@ const normalizeCurrencyCode = (currency) => getCurrencyConfig(currency).code;
 export const useSettingsStore = defineStore("settings", () => {
   const createDefaultSettings = () => ({
     store: {
-      name: "Tailwind POS",
-      address: "Cabang Konoha Selatan",
+      name: "",
+      address: "",
       phone: "+62 812 3456 7890",
       email: "store@tailwindpos.com",
       taxId: "112233123",
@@ -262,6 +262,25 @@ export const useSettingsStore = defineStore("settings", () => {
     }
   };
 
+  const syncStoreIdentityFromCompany = (companyDoc = {}, posProfile = {}) => {
+    const currentName = String(settings.store.name || "").trim();
+    const currentAddress = String(settings.store.address || "").trim();
+    const currentLogo = String(settings.store.logoUrl || "").trim();
+
+    const companyName = companyDoc.company_name || companyDoc.name || posProfile.company || "";
+    const companyLogo = companyDoc.default_letter_head || companyDoc.logo || posProfile.company_logo || "";
+
+    if (!currentName && companyName) settings.store.name = companyName;
+    if (!currentAddress && posProfile.warehouse) settings.store.address = posProfile.warehouse;
+    if (!currentLogo && companyLogo) settings.store.logoUrl = companyLogo;
+
+    if (!settings.pricing.price_list && posProfile.selling_price_list) {
+      settings.pricing.price_list = posProfile.selling_price_list;
+    }
+
+    saveSettings();
+  };
+
   // إعادة تعيين الإعدادات إلى القيم الافتراضية
   const resetSettings = () => {
     try {
@@ -292,6 +311,7 @@ export const useSettingsStore = defineStore("settings", () => {
     updateSettings,
     resetSettings,
     applyCurrencySettings,
+    syncStoreIdentityFromCompany,
     currencyOptions,
     generateAndApplyColorShades,
   };
