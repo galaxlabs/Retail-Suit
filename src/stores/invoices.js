@@ -54,6 +54,9 @@ const normalizePayment = (summary = {}) => {
 
   const translateInvoiceError = (message = '') => {
     const text = String(message || '')
+    if (text.includes('NegativeStockError') || text.includes('Insufficient Stock')) {
+      return 'اس آئٹم کا اسٹاک کم ہے، اس لیے انوائس ڈرافٹ میں محفوظ کر دی گئی ہے۔ براہ کرم بعد میں اسٹاک اپڈیٹ کریں۔'
+    }
     if (
       text.includes('المبلغ المدفوع أكبر من إجمالي الفاتورة') ||
       text.includes('paid amount is greater than invoice total')

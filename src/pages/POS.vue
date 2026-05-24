@@ -498,27 +498,18 @@ const isDark = computed(() => settingsStore.settings.appearance.theme === 'dark'
         window.$toast.success('Receipt copy downloaded')
       }
     }
-    // Proceed = Submit
+    // Proceed = keep as draft only
     const handleReceiptPrinted = async (receiptDataParam) => {
-          console.log('🔍 invoiceId:', receiptDataParam.invoiceId)
-          console.log('🔍 isFastMode:', receiptDataParam.isFastMode)
-
       try {
-        if (receiptDataParam.isFastMode) {
-          // Fast Mode: الفاتورة اتسبمتت خلاص - مفيش حاجة
-          if (window.$toast) window.$toast.success(`Invoice ${receiptDataParam.invoiceNo} completed!`)
-        } else {
-          // Normal Mode: submit دلوقتي
-          await invoicesStore.proceedInvoice(receiptDataParam)
-          if (window.$toast) window.$toast.success(`Invoice ${receiptDataParam.invoiceNo} submitted!`)
+        if (window && window["$toast"]) {
+          const name = receiptDataParam?.invoiceNo || "---"
+          window["$toast"].success("انوائس " + name + " ڈرافٹ میں محفوظ ہو گئی")
         }
-      } catch (error) {
-        if (window.$toast) window.$toast.error(error.message || 'Failed to submit invoice')
       } finally {
         cartStore.clearCart()
         selectedInvoice.value = null
         showReceiptModal.value = false
-        activeMenu.value = 'pos'
+        activeMenu.value = "pos"
       }
     }
 

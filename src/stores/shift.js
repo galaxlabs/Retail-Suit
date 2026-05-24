@@ -137,6 +137,12 @@ export const useShiftStore = defineStore('shift', {
         const currentUserInfo = await this.getCurrentUserInfo()
         const currentUser = currentUserInfo?.user
         if (!currentUser) {
+          const hasLocalOpen = Boolean(this.pos_opening_shift && this.pos_profile)
+          if (hasLocalOpen) {
+            this.isShiftOpen = true
+            this.showOpeningVoucherDialog = false
+            return true
+          }
           this.pos_opening_shift = null
           this.currentShift = null
           this.isShiftOpen = false
@@ -210,9 +216,14 @@ export const useShiftStore = defineStore('shift', {
         }
       } catch (error) {
         console.error('Error fetching opening shift:', error);
+        const hasLocalOpen = Boolean(this.pos_opening_shift && this.pos_profile)
+        if (hasLocalOpen) {
+          this.isShiftOpen = true
+          this.showOpeningVoucherDialog = false
+          return true
+        }
         this.pos_opening_shift = null;
         this.isShiftOpen = false
-        this.showOpeningVoucherDialog = true // ✅ في حالة الخطأ افتح الـ dialog
         return false
       }
     },
