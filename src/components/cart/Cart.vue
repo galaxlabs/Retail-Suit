@@ -2,7 +2,7 @@
 <template>
   <!-- wrapper section -->
   <div
-    class="rounded-3xl flex flex-col h-full shadow"
+    class="rounded-xl flex flex-col min-h-[70vh] shadow"
     :style="{
       backgroundColor: 'var(--cart-bg)',
       borderColor: 'var(--cart-border)',
@@ -80,7 +80,7 @@
     </div>
 
     <!-- Cart with Items -->
-    <div v-else class="flex-1 flex flex-col overflow-auto">
+    <div v-else class="flex-1 flex flex-col">
 
       <!-- Cart Header -->
       <div
@@ -121,7 +121,7 @@
       </div>
 
       <!-- Cart Items List -->
-      <div class="flex-1 w-full px-4 overflow-auto">
+      <div class="w-full px-4 pb-4">
         <transition-group name="cart-item" tag="div">
           <CartItem
             v-for="item in cartStore.cart"

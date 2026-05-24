@@ -8,7 +8,7 @@
       @shift-error="handleShiftError"
     />
 
-    <div class="hide-print flex flex-row h-screen antialiased"
+    <div class="hide-print flex flex-row min-h-screen overflow-y-auto antialiased"
         :style="{
         background: isDark ? 'var(--bg)' : 'var(--card-bg)',
         color: 'var(--text-main)'
@@ -21,11 +21,11 @@
       />
 
       <!-- Main Content -->
-      <div class="flex-grow flex gap-4 px-4 mt-2">
+      <div class="flex-grow grid grid-cols-12 gap-4 px-4 mt-2 items-start">
 
         <!-- Products Section -->
         <div
-          class="w-8/12 flex flex-col h-full py-4 px-4 rounded-xl"
+          class="col-span-12 xl:col-span-8 flex flex-col min-h-[70vh] py-4 px-4 rounded-xl"
           :style="{
             background: 'var(--content-panel-bg)',
             border: '1px solid var(--content-panel-border)',
@@ -66,7 +66,7 @@
 
         <!-- Cart Section -->
         <div
-          class="w-4/12 flex flex-col h-full py-4 px-3 rounded-xl"
+          class="col-span-12 xl:col-span-4 flex flex-col py-4 px-3 rounded-xl self-start"
           :style="{
             background: 'var(--sidebar-panel-bg)',
             border: '1px solid var(--sidebar-panel-border)',
@@ -357,7 +357,7 @@ const isDark = computed(() => settingsStore.settings.appearance.theme === 'dark'
         const returnedItems = invoice.returnable_items.map(item => ({
           item_code: item.item_code,
           item_name: item.item_name,
-          qty: Math.abs(item.returnable_qty), // الكمية سالبة للمرتجع
+          qty: Math.abs(item.returnable_qty), // الكمية سالبة للواپسی
           rate: item.rate,
           amount: item.amount,
           originalQuantity: item.returnable_qty, // للتحقق من الحد الأقصى
@@ -366,7 +366,7 @@ const isDark = computed(() => settingsStore.settings.appearance.theme === 'dark'
         // push returnItems to  cart [] in Cart.js
         cartStore.loadReturnItems(returnedItems)
 
-        // نخلي selectedInvoice.value تحتوي على بيانات أساسية + عناصر للمرتجع فقط
+        // نخلي selectedInvoice.value تحتوي على بيانات أساسية + عناصر للواپسی فقط
         selectedInvoice.value = {
           name: invoice.name,
           customer: invoice.customer,
@@ -461,7 +461,7 @@ const isDark = computed(() => settingsStore.settings.appearance.theme === 'dark'
         console.log('🔄 handleReturnTransaction: Starting...')
         console.log('Return data:', returnData)
 
-        // معالجة خاصة للمرتجعات
+        // معالجة خاصة للواپسیات
         const returnTransaction = {
           ...returnData,
           type: 'return',
@@ -470,7 +470,7 @@ const isDark = computed(() => settingsStore.settings.appearance.theme === 'dark'
           returnedAt: new Date().toISOString()
         }
 
-        // هنا ممكن تستدعي دالة خاصة للمرتجعات
+        // هنا ممكن تستدعي دالة خاصة للواپسیات
         // مثلاً: await invoicesStore.processReturn(returnTransaction)
 
         console.log('✅ Return processed successfully')
