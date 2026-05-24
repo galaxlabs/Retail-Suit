@@ -199,6 +199,7 @@ import { useInvoicesStore } from '@/stores/invoices'
 import ReturnInvoiceBox from '@/components/modals/ReturnInvoiceBox.vue'
 import { formatPrice } from '../utils/formatters'
 import { printReceipt } from '@/services/printer'
+import { getCompanyBranding } from '@/services/api'
 import WarningIcon from '@/components/icons/WarningIcon.svg'
 
 const hover = ref(false)
@@ -276,7 +277,7 @@ const resolvePriceListForChannel = (channel) => {
 
   const fallback = shiftStore.pos_profile?.selling_price_list || productsStore.selectedPriceList || "Standard Selling"
   if (!available.length) {
-    return channel === "wholesale" ? WHOLESALE_PRICE_LIST_NAME : RETAIL_PRICE_LIST_NAME
+    return fallback
   }
 
   if (channel === "wholesale") {
@@ -299,7 +300,6 @@ const applySalesChannel = async (channel) => {
   }
 
   const nextPriceList = resolvePriceListForChannel(channel)
-  productsStore.selectedPriceList = nextPriceList
   productsStore.selectedPriceList = nextPriceList
 
   if (channel === "wholesale") {
@@ -692,6 +692,11 @@ const isDark = computed(() => settingsStore.settings.appearance.theme === 'dark'
         await shiftStore.loadShifts()
         await shiftStore.checkActiveShift()
         settingsStore.syncStoreIdentityFromCompany({}, shiftStore.pos_profile || {})
+        const companyName = shiftStore.pos_profile?.company
+        if (companyName) {
+          const branding = await getCompanyBranding(companyName)
+          settingsStore.syncStoreIdentityFromCompany(branding, shiftStore.pos_profile || {})
+        }
         await productsStore.loadFilterOptions()
         await applySalesChannel(salesChannel.value)
         isCheckingShift.value = false

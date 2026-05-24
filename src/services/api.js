@@ -2101,3 +2101,21 @@ export const getDefaultCompany = async () => {
   }
 }
 
+export const getCompanyBranding = async (companyName) => {
+  if (!companyName) return {}
+  try {
+    const response = await call('frappe.client.get', {
+      doctype: 'Company',
+      name: companyName
+    })
+    const doc = response?.message || response || {}
+    return {
+      name: doc.company_name || doc.name || companyName,
+      logo: doc.company_logo || doc.logo || doc.default_letter_head || '',
+    }
+  } catch (err) {
+    console.error('Error loading company branding:', err)
+    return {}
+  }
+}
+
