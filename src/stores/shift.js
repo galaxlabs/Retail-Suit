@@ -167,7 +167,12 @@ export const useShiftStore = defineStore('shift', {
           );
 
           if (shift.name) {
-            this.summary = await get_shift_summary(shift.name);
+            try {
+              this.summary = await get_shift_summary(shift.name);
+            } catch (summaryError) {
+              console.warn('Shift summary unavailable, continuing with open shift:', summaryError);
+              this.summary = null;
+            }
           }
 
           const totalSales = this.summary?.total_sales || 0;
