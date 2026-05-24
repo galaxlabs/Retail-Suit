@@ -98,7 +98,7 @@
         :receipt-data="receiptData"
         :store-name="settingsStore.settings?.store?.name || shiftStore.pos_profile?.company || 'Store'"
         :store-address="settingsStore.settings?.store?.address || shiftStore.pos_profile?.warehouse || ''"
-        :store-logo="settingsStore.settings?.store?.logoUrl || ''"
+        :store-logo="settingsStore.settings?.store?.logoUrl || shiftStore.pos_profile?.company_logo || ''"
         @close="closeReceiptModal"
         @proceed="handleReceiptPrinted"
         @save="handleReceiptSaved"
@@ -254,7 +254,7 @@ const handleScannerEnter = async () => {
   }
 
   if (query.length >= 2) {
-    await productsStore.loadProductsFromFrappeDB()
+    await loadProductsWithRetry()
     const refreshed = (productsStore.products || []).find((product) => extractBarcodes(product).includes(query))
     if (refreshed) {
       cartStore.addToCart(refreshed)
@@ -310,12 +310,20 @@ const applySalesChannel = async (channel) => {
       shiftStore.setCustomer({ name: defaultCustomer })
     }
   }
-  await productsStore.loadProductsFromFrappeDB()
+  await loadProductsWithRetry()
 }
 
 const switchSalesChannel = async (channel) => {
   if (salesChannel.value === channel) return
   await applySalesChannel(channel)
+}
+
+const loadProductsWithRetry = async () => {
+  await productsStore.loadProductsFromFrappeDB()
+  if (!(productsStore.products || []).length) {
+    await new Promise((resolve) => setTimeout(resolve, 700))
+    await productsStore.loadProductsFromFrappeDB()
+  }
 }
 
 const settingsStore = useSettingsStore()
@@ -588,8 +596,9 @@ const isDark = computed(() => settingsStore.settings.appearance.theme === 'dark'
 
     // Handle shift events
     const handleShiftOpened = async (shift) => {
-      // await shiftStore.checkActiveShift()
       showOpenShiftModal.value = false
+      await shiftStore.checkActiveShift()
+      await loadProductsWithRetry()
     }
 
     const handleShiftClosed = async (shift) => {
@@ -609,7 +618,7 @@ const isDark = computed(() => settingsStore.settings.appearance.theme === 'dark'
 
     // Load sample data
     const loadProductsData = async () => {
-      await productsStore.loadProductsFromFrappeDB()
+      await loadProductsWithRetry()
       showFirstTimeModal.value = false
     }
 
