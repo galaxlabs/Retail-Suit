@@ -2104,14 +2104,12 @@ export const getDefaultCompany = async () => {
 export const getCompanyBranding = async (companyName) => {
   if (!companyName) return {}
   try {
-    const response = await call('frappe.client.get', {
-      doctype: 'Company',
-      name: companyName
-    })
-    const doc = response?.message || response || {}
+    const list = await getCompanies()
+    const companies = Array.isArray(list) ? list : (list?.message || list?.data || [])
+    const doc = (companies || []).find((c) => c.name === companyName) || {}
     return {
       name: doc.company_name || doc.name || companyName,
-      logo: doc.company_logo || doc.logo || doc.default_letter_head || '',
+      logo: doc.company_logo || '',
     }
   } catch (err) {
     console.error('Error loading company branding:', err)

@@ -94,12 +94,13 @@ export const useProductsStore = defineStore('products', {
         }
 
         const currentPOSProfile = shiftStore.pos_profile || {}
-        const posProfileName    = currentPOSProfile.name
+        const posProfileName    = currentPOSProfile.name || shiftStore.pos_profile_name || (typeof currentPOSProfile === "string" ? currentPOSProfile : "")
         const currentPriceList  =
           this.selectedPriceList ||
           currentPOSProfile.selling_price_list ||
           "Standard Selling"
         const currentCustomer = currentPOSProfile.customer || ''
+        const posProfilePayload = typeof currentPOSProfile === "string" ? { name: posProfileName, selling_price_list: currentPriceList, customer: currentCustomer } : currentPOSProfile
         const selectedWarehouse = this.selectedWarehouse || null  // null → backend uses pos_profile default
 
         console.log('➡️ POS Profile :', posProfileName)
@@ -114,7 +115,7 @@ export const useProductsStore = defineStore('products', {
 
         this.isLoading = true
         const products = await getItemsFromFrappeDB(
-          currentPOSProfile,
+          posProfilePayload,
           currentPriceList,
           currentCustomer,
           this.searchKeyword,
