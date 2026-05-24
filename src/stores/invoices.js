@@ -74,6 +74,21 @@ const normalizePayment = (summary = {}) => {
     }
     return shiftStore.pos_profile?.customer || 'Walk-in Customer'
   }
+const resolvePaymentMethod = (shiftStore, paymentMethod) => {
+    const direct = String(paymentMethod || '').trim()
+    if (direct) return direct
+
+    const payments = shiftStore.pos_profile?.payments || []
+    const defaultPayment = payments.find((p) => p.default) || payments[0]
+    const fallback = String(defaultPayment?.mode_of_payment || '').trim()
+
+    if (!fallback) {
+      throw new Error('Please configure Mode of Payment and default Cash/Bank account in POS Profile')
+    }
+
+    return fallback
+  }
+
 
 
   /* ========================
@@ -182,140 +197,130 @@ const normalizePayment = (summary = {}) => {
 
   async function addTransaction(transactionData) {
     try {
-
       const shiftStore = useShiftStore()
 
-      if (!transactionData?.items?.length) throw new Error('Invalid transaction data - items missing')
-      if (!shiftStore.pos_profile) throw new Error('POS Profile not loaded')
-      const salesChannel = transactionData.salesChannel || localStorage.getItem('retail_sales_channel_mode') || 'retail'
-      const customerName = resolveCustomerName(shiftStore, salesChannel)
+      if (!transactionData?.items?.length) throw new Error("Invalid transaction data - items missing")
+      if (!shiftStore.pos_profile) throw new Error("POS Profile not loaded")
 
+      const salesChannel = transactionData.salesChannel || localStorage.getItem("retail_sales_channel_mode") || "retail"
+      const customerName = resolveCustomerName(shiftStore, salesChannel)
       const { summary, paymentMethod, items, transactionId, mode } = transactionData
-      const { paidAmount, totalAmount } = normalizePayment(summary)
+      const resolvedPaymentMethod = resolvePaymentMethod(shiftStore, paymentMethod)
+      const { paidAmount } = normalizePayment(summary)
+
       const invoicePayload = {
-        "doctype": 'Sales Invoice',
-        "name": transactionData.draftName || undefined,
-        "customer": customerName,
-        "posting_date": new Date().toISOString().slice(0, 10),
-        "pos_profile": shiftStore.pos_profile.name,
-        "posa_pos_opening_shift": shiftStore.pos_opening_shift?.name,
-        "is_pos": 1,
-        "ignore_pricing_rule": 1,
-        "payments": [{ "mode_of_payment": paymentMethod, "amount": paidAmount }],
-        "items": items.map(item => ({
-              "item_code": item.item_code,
-              "qty": item.qty,
-              "rate": item.rate,
-              "income_account": shiftStore.pos_profile.income_account,
-              "expense_account": shiftStore.pos_profile.expense_account,
-              "warehouse": shiftStore.pos_profile.warehouse,
+        doctype: "Sales Invoice",
+        name: transactionData.draftName || undefined,
+        customer: customerName,
+        posting_date: new Date().toISOString().slice(0, 10),
+        pos_profile: shiftStore.pos_profile.name,
+        posa_pos_opening_shift: shiftStore.pos_opening_shift?.name,
+        is_pos: 1,
+        ignore_pricing_rule: 1,
+        payments: [{ mode_of_payment: resolvedPaymentMethod, amount: paidAmount }],
+        items: items.map((item) => ({
+          item_code: item.item_code,
+          qty: item.qty,
+          rate: item.rate,
+          income_account: shiftStore.pos_profile.income_account,
+          expense_account: shiftStore.pos_profile.expense_account,
+          warehouse: shiftStore.pos_profile.warehouse,
         })),
-        "company": shiftStore.pos_profile.company,
+        company: shiftStore.pos_profile.company,
       }
-      console.log('🔍 draftName:', transactionData.draftName)
-      console.log('🔍 invoicePayload.name:', invoicePayload.name)
-      console.log('📋 Invoice Payload:', invoicePayload)
 
       const dataPayload = {
-        "due_date": new Date().toISOString().slice(0, 10),
+        due_date: new Date().toISOString().slice(0, 10),
         transactionId,
         mode,
         redeemed_customer_credit: transactionData.redeemed_customer_credit ?? false,
         customer_credit_dict: transactionData.customer_credit_dict ?? [],
       }
 
-      console.log('📋 Data Payload:', dataPayload)
-
       const result = await submitInvoiceResource.submit({
         invoice: JSON.stringify(invoicePayload),
         data: JSON.stringify(dataPayload),
       })
 
-      console.log('📋 Result Api Submit Invoice:', result)
-      if (!result?.invoice) throw new Error('Could not get invoice number from response')
+      if (!result?.invoice) throw new Error("Could not get invoice number from response")
       return {
-        invoiceNo: result?.invoice,   // invoiceNo: "ACC-SINV-2026-00063"
-        message: result?.message,     // message: "Invoice submitted successfully"
-        status: result?.status,       // status: "submitted"
-        success: result?.success,     // success: "true"
+        invoiceNo: result?.invoice,
+        message: result?.message,
+        status: result?.status,
+        success: result?.success,
       }
-
     } catch (error) {
-      console.error('❌ addTransaction Error:', error)
-
-      let message = error.message || 'Something went wrong'
+      let message = error.message || "Something went wrong"
       if (submitInvoiceResource.error) {
         const resError = submitInvoiceResource.error
         message = resError.messages?.[0] || resError.message || message
       }
-
       throw new Error(translateInvoiceError(message))
     }
   }
 
   async function saveInvoice(transactionData) {
-  try {
-    const shiftStore = useShiftStore()
-    const { summary, paymentMethod, items } = transactionData
-    const salesChannel = transactionData.salesChannel || localStorage.getItem('retail_sales_channel_mode') || 'retail'
-    const customerName = resolveCustomerName(shiftStore, salesChannel)
-    const { paidAmount } = normalizePayment(summary)
+    try {
+      const shiftStore = useShiftStore()
+      const { summary, paymentMethod, items } = transactionData
+      const salesChannel = transactionData.salesChannel || localStorage.getItem("retail_sales_channel_mode") || "retail"
+      const customerName = resolveCustomerName(shiftStore, salesChannel)
+      const resolvedPaymentMethod = resolvePaymentMethod(shiftStore, paymentMethod)
+      const { paidAmount } = normalizePayment(summary)
 
-    const invoicePayload = {
-      "doctype": 'Sales Invoice',
-      "name": transactionData.draftName || undefined,  // ←  draft name
-      "is_pos": 1,
-      "ignore_pricing_rule": 1,
-      "company": shiftStore.pos_profile.company,
-      "customer": customerName,
-      "posting_date": new Date().toISOString().slice(0, 10),
-      "pos_profile": shiftStore.pos_profile.name,
-      "payments": [{ mode_of_payment: paymentMethod, amount: paidAmount }],
-      "items": items.map(item => ({
-        "item_code": item.item_code,
-        "qty": item.qty,
-        "rate": item.rate,
-        "income_account": shiftStore.pos_profile.income_account,
-        "expense_account": shiftStore.pos_profile.expense_account,
-        "warehouse": shiftStore.pos_profile.warehouse,
-      })),
-      "posa_pos_opening_shift": shiftStore.pos_opening_shift?.name,
+      const invoicePayload = {
+        doctype: "Sales Invoice",
+        name: transactionData.draftName || undefined,
+        is_pos: 1,
+        ignore_pricing_rule: 1,
+        company: shiftStore.pos_profile.company,
+        customer: customerName,
+        posting_date: new Date().toISOString().slice(0, 10),
+        pos_profile: shiftStore.pos_profile.name,
+        payments: [{ mode_of_payment: resolvedPaymentMethod, amount: paidAmount }],
+        items: items.map((item) => ({
+          item_code: item.item_code,
+          qty: item.qty,
+          rate: item.rate,
+          income_account: shiftStore.pos_profile.income_account,
+          expense_account: shiftStore.pos_profile.expense_account,
+          warehouse: shiftStore.pos_profile.warehouse,
+        })),
+        posa_pos_opening_shift: shiftStore.pos_opening_shift?.name,
+      }
+
+      const dataPayload = {
+        due_date: new Date().toISOString().slice(0, 10),
+        redeemed_customer_credit: false,
+        customer_credit_dict: [],
+      }
+
+      const result = await saveInvoiceResource.submit({
+        invoice: JSON.stringify(invoicePayload),
+        data: JSON.stringify(dataPayload),
+      })
+      return result
+    } catch (error) {
+      let message = error.message || "Something went wrong"
+      if (saveInvoiceResource.error) {
+        message = saveInvoiceResource.error.messages?.[0] || message
+      }
+      throw new Error(translateInvoiceError(message))
     }
-
-    const dataPayload = {
-      due_date: new Date().toISOString().slice(0, 10),
-      redeemed_customer_credit: false,
-      customer_credit_dict: [],
-    }
-
-    const result = await saveInvoiceResource.submit({
-      invoice: JSON.stringify(invoicePayload),
-      data: JSON.stringify(dataPayload),
-    })
-    console.log('🔍 result saveInvoice:',result)
-    return result
-
-  } catch (error) {
-    console.error('❌ saveInvoice Error:', error)
-    let message = error.message || 'Something went wrong'
-    if (saveInvoiceResource.error) {
-      message = saveInvoiceResource.error.messages?.[0] || message
-    }
-    throw new Error(translateInvoiceError(message))
-  }
   }
 
   async function proceedInvoice(receiptData) {
     try {
       const shiftStore = useShiftStore()
       const { summary, paymentMethod, items, invoiceId } = receiptData
-      const salesChannel = receiptData.salesChannel || localStorage.getItem('retail_sales_channel_mode') || 'retail'
+      const salesChannel = receiptData.salesChannel || localStorage.getItem("retail_sales_channel_mode") || "retail"
       const customerName = resolveCustomerName(shiftStore, salesChannel)
+      const resolvedPaymentMethod = resolvePaymentMethod(shiftStore, paymentMethod)
       const { paidAmount, totalAmount } = normalizePayment(summary)
 
       const invoicePayload = {
-        name: invoiceId,  // الـ draft name
-        doctype: 'Sales Invoice',
+        name: invoiceId,
+        doctype: "Sales Invoice",
         is_pos: 1,
         ignore_pricing_rule: 1,
         company: shiftStore.pos_profile.company,
@@ -323,9 +328,9 @@ const normalizePayment = (summary = {}) => {
         customer: customerName,
         posting_date: new Date().toISOString().slice(0, 10),
         pos_profile: shiftStore.pos_profile.name,
-        paymentMethod: paymentMethod,
-        payments: [{ mode_of_payment: paymentMethod, amount: paidAmount }],
-        items: items.map(item => ({
+        paymentMethod: resolvedPaymentMethod,
+        payments: [{ mode_of_payment: resolvedPaymentMethod, amount: paidAmount }],
+        items: items.map((item) => ({
           item_code: item.item_code,
           qty: item.qty,
           rate: item.rate,
@@ -347,12 +352,9 @@ const normalizePayment = (summary = {}) => {
         invoice: JSON.stringify(invoicePayload),
         data: JSON.stringify(dataPayload),
       })
-
       return result
-
     } catch (error) {
-      console.error('❌ proceedInvoice Error:', error)
-      let message = error.message || 'Something went wrong'
+      let message = error.message || "Something went wrong"
       if (submitInvoiceResource.error) {
         message = submitInvoiceResource.error.messages?.[0] || message
       }
