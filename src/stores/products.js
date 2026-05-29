@@ -122,7 +122,7 @@ export const useProductsStore = defineStore('products', {
         this.error = null
         this.products = products || []
 
-        // حفظ الـ defaults أول مرة
+        // محفوظ کریں الـ defaults أول مرة
         if (!this.selectedPriceList) this.selectedPriceList = currentPriceList
 
         return this.products

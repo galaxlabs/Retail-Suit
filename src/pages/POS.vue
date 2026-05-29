@@ -714,7 +714,38 @@ const isDark = computed(() => settingsStore.settings.appearance.theme === 'dark'
         await productsStore.loadFilterOptions()
         await applySalesChannel(salesChannel.value)
         isCheckingShift.value = false
+
+        // Keyboard shortcuts
+        document.addEventListener('keydown', handleKeyboardShortcuts)
     })
+
+    const handleKeyboardShortcuts = (e) => {
+      // Ctrl+F or / → focus search
+      if ((e.ctrlKey && e.key === 'f') || (e.key === '/' && !e.ctrlKey && e.target.tagName !== 'INPUT')) {
+        e.preventDefault()
+        const searchInput = document.querySelector('input[placeholder*="Search"]')
+        if (searchInput) searchInput.focus()
+        return
+      }
+      // Escape → clear search
+      if (e.key === 'Escape') {
+        searchKeyword.value = ''
+        return
+      }
+      // F8 → toggle Retail/Wholesale/Purchase
+      if (e.key === 'F8' && !e.ctrlKey) {
+        e.preventDefault()
+        const channels = ['retail', 'wholesale', 'purchase']
+        const current = channels.indexOf(salesChannel.value)
+        const next = channels[(current + 1) % channels.length]
+        switchSalesChannel(next)
+      }
+      // F5 → Refresh products
+      if (e.key === 'F5' && !e.ctrlKey) {
+        e.preventDefault()
+        loadProductsWithRetry()
+      }
+    }
 
 
 

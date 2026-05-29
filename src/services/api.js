@@ -1283,7 +1283,7 @@ export const processAutoAttendanceApi = async (shiftName) => {
     return {
       status: res.status,
       data: res.data,
-      message: 'تم معالجة الحضور بنجاح'
+      message: 'تم معالجة حاضری بنجاح'
     }
   } catch (error) {
     console.error('Error processing auto attendance:', error)
@@ -1396,7 +1396,7 @@ export const updateShiftAssignmentApi = async (data) => {
     return {
       status: res.status,
       data: res.data,
-      message: 'تم تحديث تعيين الوردية بنجاح'
+      message: 'تم اپ ڈیٹ کریں تعيين الوردية بنجاح'
     }
   } catch (error) {
     console.error('Error updating shift assignment:', error)

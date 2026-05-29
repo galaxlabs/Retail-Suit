@@ -318,7 +318,7 @@ const receiptContent = ref(null)
     }
 
     // Handle save receipt
-    const isSaved = ref(false)  // هل اتحفظت في Frappe
+    const isSaved = ref(false)  // هل اتمحفوظ کریںت في Frappe
     const savedInvoiceName = ref(null)  // الـ name بتاع الـ draft
 
       const handleSaveReceipt = async () => {

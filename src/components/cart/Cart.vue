@@ -274,7 +274,7 @@ const confirmed = await Swal.fire({
 // إذا ضغط Cancel، لا تفعل شيء
 if (confirmed.isDismissed) return
 
-// إذا ضغط Yes فقط، نفذ الحذف مباشرة بدون رسالة تأكيد ثانية
+// إذا ضغط Yes فقط، نفذ الحذف کریں مباشرة بدون رسالة تأكيد سیکنڈ
 if (confirmed.isConfirmed) {
   cartStore.clearCart()
 
@@ -332,7 +332,7 @@ const handletransactionData = async (paymentData) => {
     }
 
     const fullData = {
-      ...paymentData,  // ✅ يحتوي على transactionData من PaymentSection
+      ...paymentData,  // ✅ يحتوي على transactionData سے PaymentSection
       mode: props.mode,
       transactionType: props.mode === 'return' ? 'return' : 'sale'
     }

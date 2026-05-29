@@ -148,10 +148,10 @@ const loadCustomers = async () => {
   }
 }
 
-// فتح مودال جديد
+// فتح مودال نیا
 const handleCustomerChange = () => {
   if (!selectedCustomer.value) {
-    // الخيار الفاضي -> إنشاء عميل جديد
+    // الخيار الفاضي -> إنشاء عميل نیا
     showAddCustomerModal.value = true
     customer_id.value = null
     customer_info.value = {}
@@ -168,7 +168,7 @@ const handleCustomerChange = () => {
 
 
 const handleCustomerUpdated = async (updatedCustomer) => {
- const res = await loadCustomers() // إعادة تحميل العملاء من السيرفر
+ const res = await loadCustomers() // إعادة تحميل العملاء سے السيرفر
 
 
   const existingIndex = res.findIndex(c => c.name === updatedCustomer.name)
