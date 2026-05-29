@@ -168,7 +168,7 @@
                     type="text"
                     v-model="searchQuery"
                     @input="searchInvoices"
-                    placeholder="بحث بالرقم أو اسم الموظف..."
+                    placeholder="Search by number or name..."
                     />
                   </div>
                 </div>

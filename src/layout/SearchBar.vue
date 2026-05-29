@@ -2,7 +2,7 @@
   <div class="sticky top-0 z-10 flex px-2 flex-row gap-2">
     <!-- Status Display -->
     <div v-if="lastBarcode" class="barcode-display">
-      <h3>آخری بارکوڈ:</h3>
+      <h3>Last Barcode:</h3>
       <p>{{ lastBarcode }}</p>
     </div>
 
@@ -168,9 +168,9 @@ import qrBot from '@/services/qrBot.js'
 
     const getStatusTitle = () => {
       if (qrBot.isConnected.value) {
-        return '📱 سکینر موڈ - سکین یا ٹائپ کرنے کے لیے تیار'
+        return 'Scanner mode - ready'
       }
-      return '⌨️ وضع التلاش کریں اليدوي'
+      return 'Manual search mode'
     }
 
     const switchToBarcode = () => {
@@ -254,13 +254,13 @@ import qrBot from '@/services/qrBot.js'
           console.log('✅ Product found and added to cart:', product.item_name)
         } else {
           if (window.$toast) {
-            window.$toast.error(`❌ پروڈکٹ نمبر ${barcode} موجود نہیں`)
+            window.$toast.error('Product ' + barcode + ' not found')
           }
         }
       } catch (error) {
         console.error('❌ Error processing barcode:', error)
         if (window.$toast) {
-          window.$toast.error('بارکوڈ پروسیسنگ میں خرابی')
+          window.$toast.error('Barcode processing error')
         }
       } finally {
         isLoading.value = false
