@@ -237,9 +237,9 @@ export const useShiftStore = defineStore('shift', {
     },
     set_payment_methods() {
       // get payment methods from pos profile
-      if (!this.pos_profile.posa_allow_make_new_payments) return;
+      // Always load payment methods from POS profile
       this.payment_methods = [];
-      this.pos_profile.payments.forEach((method) => {
+      ;(this.pos_profile.payments || []).forEach((method) => {
         this.payment_methods.push({
           row_id: method.name,
           mode_of_payment: method.mode_of_payment,

@@ -110,7 +110,7 @@ window.fetch = (input, init = {}) => {
       return originalFetch(requestUrl, withAuthHeaders({
         ...init,
         credentials: init.credentials ?? "include",
-      }, requestUrl)))
+      }, requestUrl))
       .then((resp) => {
         if (resp.status === 401 || resp.status === 403) {
           clearSession()
