@@ -36,8 +36,8 @@
           <!-- Receipt Header -->
           <div class="text-center mb-4">
             <img
-              :src="props.storeLogo || defaultLogo"
-              alt="Tailwind POS"
+              :src="resolvedLogo"
+              :alt="storeName"
               class="mb-3 w-8 h-8 inline-block"
               @error="handleLogoError"
             />
@@ -214,6 +214,7 @@ import PrintIcon from '@/components/icons/PrintIcon.svg'
 import CheckIcon from '@/components/icons/CheckIcon.svg'
 import CloseIcon from '@/components/icons/CloseIcon.svg'
 import invoiceTemplate from './invoiceTemplate.vue';
+import config from '@/config/frappe'
 import defaultLogo from '@/assets/img/receipt-logo.png';
 const props = defineProps({
     receiptData: {
@@ -247,12 +248,21 @@ const invoiceTemplateRef = ref(null)
 
 
 
-    const receiptContent = ref(null)
+const receiptContent = ref(null)
     const isProcessing = ref(false)
     const logoError = ref(false)
 
     // Computed properties
     const summary = computed(() => props.receiptData?.summary || {})
+
+    // Resolve logo URL - prepend FRAPPE_URL for relative paths
+    const resolvedLogo = computed(() => {
+      const logo = props.storeLogo
+      if (!logo) return defaultLogo
+      if (logo.startsWith('http')) return logo
+      if (logo.startsWith('/')) return config.FRAPPE_URL + logo
+      return logo
+    })
 
     const printContent = computed(() => {
       if (!receiptContent.value) return ''

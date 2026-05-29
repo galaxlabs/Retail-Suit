@@ -33,7 +33,7 @@
           FIRST TIME?
         </h3>
         <p class="text-gray-600 text-sm md:text-base">
-          Welcome to Tailwind POS! Let's get you started.
+          Welcome to Retail Suite! Let's get you started.
         </p>
       </div>
 

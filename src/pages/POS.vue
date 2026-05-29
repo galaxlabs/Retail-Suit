@@ -378,6 +378,11 @@ const isDark = computed(() => settingsStore.settings.appearance.theme === 'dark'
 
         showReturnInvoiceBox.value = false
 
+        // Auto-select customer from the returned invoice
+        if (invoice.customer) {
+          shiftStore.setCustomer({ name: invoice.customer, customer_name: invoice.customer_name || invoice.customer })
+        }
+
       if (invoice.returnable_items && invoice.returnable_items.length) {
 
         const returnedItems = invoice.returnable_items.map(item => ({
@@ -438,7 +443,7 @@ const isDark = computed(() => settingsStore.settings.appearance.theme === 'dark'
 
           receiptData.value = {
             ...transactionData,
-            storeName: settingsStore.settings?.store?.name || shiftStore.pos_profile?.company || "Store",
+            storeName: settingsStore.settings?.store?.name || shiftStore.pos_profile?.company || shiftStore.pos_profile?.company || "POS Store",
             storeAddress: settingsStore.settings?.store?.address || shiftStore.pos_profile?.warehouse || "",
             storeLogo: settingsStore.settings?.store?.logoUrl || "",
             footerMessage: settingsStore.settings?.receipt?.footerMessage || "",
@@ -453,7 +458,7 @@ const isDark = computed(() => settingsStore.settings.appearance.theme === 'dark'
 
           receiptData.value = {
             ...transactionData,
-            storeName: settingsStore.settings?.store?.name || shiftStore.pos_profile?.company || "Store",
+            storeName: settingsStore.settings?.store?.name || shiftStore.pos_profile?.company || shiftStore.pos_profile?.company || "POS Store",
             storeAddress: settingsStore.settings?.store?.address || shiftStore.pos_profile?.warehouse || "",
             storeLogo: settingsStore.settings?.store?.logoUrl || "",
             footerMessage: settingsStore.settings?.receipt?.footerMessage || "",
