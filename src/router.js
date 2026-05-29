@@ -66,7 +66,7 @@ const appBase = window.location.pathname.startsWith('/retail_suite/') ? '/retail
 
 const routes = [
   { path: '/', redirect: '/login' },
-  { path: '/login', name: 'Login', component: Login, meta: { requiresAuth: false, layout: 'none' } },
+  { path: '/login', name: 'Login', component: Login, meta: { requiresAuth: false, layout: 'none' }, beforeEnter: () => { stopSessionCheck(); return true } },
   { path: '/pos', name: 'POS', component: POS, meta: { requiresAuth: true, layout: 'none' } },
   { path: '/settings', name: 'Settings', component: Setting, meta: { requiresAuth: true } },
   { path: '/archive', name: 'Archive', component: Archive, meta: { requiresAuth: true } },
@@ -122,11 +122,38 @@ const router = createRouter({
   routes,
 })
 
+
+let sessionCheckInterval = null
+
+const startSessionCheck = () => {
+  if (sessionCheckInterval) return
+  sessionCheckInterval = setInterval(async () => {
+    if (window.location.hash.startsWith("#/login")) return
+    const ok = await checkSession()
+    if (!ok) {
+      clearInterval(sessionCheckInterval)
+      sessionCheckInterval = null
+      localStorage.removeItem("api_key")
+      localStorage.removeItem("api_secret")
+      sessionStorage.setItem("session_expired", "1")
+      window.location.hash = "#/login"
+    }
+  }, 30000)
+}
+
+const stopSessionCheck = () => {
+  if (sessionCheckInterval) {
+    clearInterval(sessionCheckInterval)
+    sessionCheckInterval = null
+  }
+}
+
 let sessionChecked = false
 router.beforeEach(async (to, from, next) => {
   if (!sessionChecked) {
     await checkSession()
     sessionChecked = true
+  startSessionCheck()
   }
 
   const isAuth = !!session.user

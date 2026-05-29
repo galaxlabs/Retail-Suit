@@ -182,7 +182,7 @@ const imageError = ref(false)
 const hasError = ref(false)
 const displayQuantity = ref(props.item.qty)
 const pendingQuantity = ref(props.item.qty)
-const defaultImage = '/src/assets/img/default-product.jpg'
+const defaultImage = '/img/default-product.jpg'
 const defaultImageSrc = `${config.VUE_URL}${defaultImage}`
 const currentSrc = ref(
   props.item?.image
