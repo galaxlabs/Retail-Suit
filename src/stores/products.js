@@ -18,7 +18,10 @@ export const useProductsStore = defineStore('products', {
     warehouses: [],
 
     db: null,
-    error: null
+    error: null,
+    hasMore: true,
+    pageStart: 0,
+    PAGE_SIZE: 50
   }),
 
   getters: {
@@ -124,6 +127,9 @@ export const useProductsStore = defineStore('products', {
 
         console.log("AFTER API CALL", products)
         console.log('✅ Products loaded:', products?.length)
+        this.pageStart = 0
+        this.hasMore = (products || []).length >= this.PAGE_SIZE
+        this.error = null
         this.products = products || []
 
         // حفظ الـ defaults أول مرة
@@ -131,7 +137,7 @@ export const useProductsStore = defineStore('products', {
 
         return this.products
       } catch (error) {
-        console.error('❌ Error loading products:', error)
+        this.error = error?.message || 'Failed to load products'; console.error('Error loading products:', error)
         return []
       } finally {
         this.isLoading = false
