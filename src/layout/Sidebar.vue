@@ -261,7 +261,7 @@ import {
 
     // ✅ مراقبة تغييرات localStorage سے صفحات أخرى
     const handleStorageChange = (event) => {
-      if (event.key === 'tailwind-pos-settings' || !event.key) {
+      if (event.key === 'retail-suite-settings' || !event.key) {
         console.log('🔔 localStorage changed from another tab/window!')
 
         // إعادة تحميل الإعدادات سے localStorage

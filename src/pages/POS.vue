@@ -81,7 +81,6 @@
               style="background: var(--input-bg); color: var(--input-text); border: 1px solid var(--input-border);"
               placeholder="Search item by name, code, or category"
             />
-          </div>
 
           <div class="flex-1 overflow-y-auto">
             <ProductGrid :search-keyword="searchKeyword" :simple-mode="true" />
@@ -718,11 +717,14 @@ const isDark = computed(() => settingsStore.settings.appearance.theme === 'dark'
         settingsStore.loadSettings()
         await shiftStore.loadShifts()
         await shiftStore.checkActiveShift()
-        settingsStore.syncStoreIdentityFromCompany({}, shiftStore.pos_profile || {})
         const companyName = shiftStore.pos_profile?.company
         if (companyName) {
           const branding = await getCompanyBranding(companyName)
-          settingsStore.syncStoreIdentityFromCompany(branding, shiftStore.pos_profile || {})
+          if (branding && branding.name) {
+            settingsStore.syncStoreIdentityFromCompany(branding, shiftStore.pos_profile || {})
+          } else {
+            settingsStore.syncStoreIdentityFromCompany({}, shiftStore.pos_profile || {})
+          }
         }
         await productsStore.loadFilterOptions()
         await applySalesChannel(salesChannel.value)

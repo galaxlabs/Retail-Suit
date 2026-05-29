@@ -23,7 +23,7 @@ export const useSettingsStore = defineStore("settings", () => {
       name: "",
       address: "",
       phone: "+62 812 3456 7890",
-      email: "store@tailwindpos.com",
+      email: "",
       taxId: "112233123",
       currencyCode: 'PKR',
       locale:'en-PK',
@@ -213,19 +213,27 @@ export const useSettingsStore = defineStore("settings", () => {
   // Load settings from localStorage
   const loadSettings = () => {
     try {
-      const savedSettings = localStorage.getItem("tailwind-pos-settings");
+      // Migrate from old key
+      let savedSettings = localStorage.getItem("retail-suite-settings");
+      if (!savedSettings) {
+        const oldSettings = localStorage.getItem("tailwind-pos-settings");
+        if (oldSettings) {
+          localStorage.setItem("retail-suite-settings", oldSettings);
+          localStorage.removeItem("tailwind-pos-settings");
+          savedSettings = oldSettings;
+        }
+      }
       if (savedSettings) {
         const parsed = JSON.parse(savedSettings);
         Object.assign(settings, normalizeSettings(parsed));
-        // تطبيق الألوان عند التحميل
         generateAndApplyColorShades(settings.appearance.primaryColor);
-        console.log("✅ Settings loaded from localStorage");
+        console.log("Settings loaded from localStorage");
       } else {
-        console.log("ℹ️ No saved settings found, using defaults");
+        console.log("No saved settings found, using defaults");
         saveSettings();
       }
     } catch (error) {
-      console.error("❌ Failed to load settings:", error);
+      console.error("Failed to load settings:", error);
     }
   };
 
@@ -239,7 +247,7 @@ export const useSettingsStore = defineStore("settings", () => {
       generateAndApplyColorShades(color);
 
       localStorage.setItem(
-        "tailwind-pos-settings",
+        "retail-suite-settings",
         JSON.stringify(settingsToSave)
       );
       console.log("✅ Settings saved to localStorage");
@@ -268,10 +276,12 @@ export const useSettingsStore = defineStore("settings", () => {
     const currentAddress = String(settings.store.address || "").trim();
     const currentLogo = String(settings.store.logoUrl || "").trim();
 
-    const companyName = companyDoc.company_name || companyDoc.name || posProfile.company || "";
+    const brandingName = companyDoc.company_name || companyDoc.name || "";
+    const profileCompany = posProfile.company || "";
     const companyLogo = companyDoc.default_letter_head || companyDoc.logo || posProfile.company_logo || "";
 
-    if (!currentName && companyName) settings.store.name = companyName;
+    if (brandingName) settings.store.name = brandingName;
+    else if (!currentName && profileCompany) settings.store.name = profileCompany;
     if (!currentAddress && posProfile.warehouse) settings.store.address = posProfile.warehouse;
     if (!currentLogo && companyLogo) settings.store.logoUrl = companyLogo;
 
