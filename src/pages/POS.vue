@@ -42,13 +42,6 @@
                 Retail
               </button>
               <button
-                @click="switchSalesChannel('retail')"
-                class="px-4 py-2 text-sm font-medium rounded-md transition"
-                :style="salesChannel === 'retail' ? `background: ${primaryColor}; color: #fff;` : 'color: var(--text-main);'"
-              >
-                Retail
-              </button>
-              <button
                 @click="switchSalesChannel('wholesale')"
                 class="px-4 py-2 text-sm font-medium rounded-md transition"
                 :style="salesChannel === 'wholesale' ? `background: ${primaryColor}; color: #fff;` : 'color: var(--text-main);'"
@@ -295,6 +288,7 @@ const handleScannerEnter = async () => {
 
 const RETAIL_PRICE_LIST_NAME = "Retail Selling"
 const WHOLESALE_PRICE_LIST_NAME = "Wholesale Selling"
+const BUYING_PRICE_LIST_NAME = "Standard Buying"
 
 const resolvePriceListForChannel = (channel) => {
   const available = (productsStore.priceLists || []).map((p) =>
@@ -309,6 +303,13 @@ const resolvePriceListForChannel = (channel) => {
   if (channel === "wholesale") {
     return available.includes(WHOLESALE_PRICE_LIST_NAME)
       ? WHOLESALE_PRICE_LIST_NAME
+      : fallback
+  }
+
+  if (channel === "purchase") {
+    const buyingList = shiftStore.pos_profile?.buying_price_list || BUYING_PRICE_LIST_NAME
+    return available.includes(buyingList)
+      ? buyingList
       : fallback
   }
 

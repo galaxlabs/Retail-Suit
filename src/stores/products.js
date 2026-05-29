@@ -97,6 +97,7 @@ export const useProductsStore = defineStore('products', {
         const currentPriceList  =
           this.selectedPriceList ||
           currentPOSProfile.selling_price_list ||
+          currentPOSProfile.buying_price_list ||
           "Standard Selling"
         const currentCustomer = currentPOSProfile.customer || ''
         const posProfilePayload = typeof currentPOSProfile === "string" ? { name: posProfileName, selling_price_list: currentPriceList, customer: currentCustomer } : currentPOSProfile
