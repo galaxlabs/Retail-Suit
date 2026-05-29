@@ -1858,9 +1858,11 @@ export const createPurchaseReceipt = async (receiptData) => {
     const res = await call(`${BASE_PURCHASE_RECEIPTS}.create_purchase_receipt`, {
       data: JSON.stringify(receiptData)
     })
+    const result = res?.message || res?.data || res
     return {
       status: 'success',
-      data: res.data.message?.data || res.data.message || {},
+      data: result,
+      name: result?.name || result?.data?.name,
       message: 'Receipt created successfully'
     }
   } catch (error) {
@@ -2117,18 +2119,3 @@ export const getCompanyBranding = async (companyName) => {
   }
 }
 
-
-// ================================================================
-// Create Purchase Receipt from POS
-// ================================================================
-export const createPurchaseReceipt = async (payload) => {
-  try {
-    const response = await call('retail.retail.api.purchase_receipt.create_purchase_receipt', {
-      data: JSON.stringify(payload)
-    })
-    return response?.message || response?.data || response
-  } catch (error) {
-    console.error('createPurchaseReceipt error:', error)
-    throw error
-  }
-}

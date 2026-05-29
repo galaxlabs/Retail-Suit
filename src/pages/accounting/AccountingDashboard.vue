@@ -125,7 +125,7 @@ import {
   Wallet
 } from 'lucide-vue-next'
 import { useSettingsStore } from '@/stores/settings'
-import { safeCall } from '@/services/apiClient' from "@/stores/settings"
+import { safeCall } from '@/services/apiClient'
 
     // stores
     const settingsStore = useSettingsStore()

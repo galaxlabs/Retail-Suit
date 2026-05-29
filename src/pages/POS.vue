@@ -651,11 +651,6 @@ const isDark = computed(() => settingsStore.settings.appearance.theme === 'dark'
 
 
         if (savedInvoice) {
-            id: savedInvoice.id,
-            receiptNo: savedInvoice.receiptNo,
-            invoiceNo: receiptDataParam.invoiceNo
-          })
-
           // ✅ استخدم البيانات الصحيحة
           if (window.$toast) {
             const displayName = receiptDataParam.invoiceNo || savedInvoice.receiptNo || savedInvoice.id
