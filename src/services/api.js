@@ -2103,12 +2103,12 @@ export const getDefaultCompany = async () => {
 export const getCompanyBranding = async (companyName) => {
   if (!companyName) return {}
   try {
-    const list = await getCompanies()
-    const companies = Array.isArray(list) ? list : (list?.message || list?.data || [])
-    const doc = (companies || []).find((c) => c.name === companyName) || {}
+    const res = await call('retail.retail.api.common.get_company_branding', { company: companyName })
+    const data = res?.message || res || {}
     return {
-      name: doc.company_name || doc.name || companyName,
-      logo: doc.company_logo || '',
+      name: data.name || companyName,
+      logo: data.logo || '',
+      currency: data.currency || '',
     }
   } catch (err) {
     console.error('Error loading company branding:', err)

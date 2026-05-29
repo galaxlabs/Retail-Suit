@@ -461,9 +461,9 @@ const isDark = computed(() => settingsStore.settings.appearance.theme === 'dark'
 
           receiptData.value = {
             ...transactionData,
-            storeName: settingsStore.settings?.store?.name || shiftStore.pos_profile?.company || shiftStore.pos_profile?.company || "POS Store",
+            storeName: settingsStore.settings?.store?.name || shiftStore.pos_profile?.company || 'Store',
             storeAddress: settingsStore.settings?.store?.address || shiftStore.pos_profile?.warehouse || "",
-            storeLogo: settingsStore.settings?.store?.logoUrl || "",
+            storeLogo: settingsStore.settings?.store?.logoUrl || shiftStore.pos_profile?.company_logo || '',
             footerMessage: settingsStore.settings?.receipt?.footerMessage || "",
             invoiceNo: invoiceResponse.invoiceNo,
             invoiceId: invoiceResponse.invoiceNo,
@@ -476,9 +476,9 @@ const isDark = computed(() => settingsStore.settings.appearance.theme === 'dark'
 
           receiptData.value = {
             ...transactionData,
-            storeName: settingsStore.settings?.store?.name || shiftStore.pos_profile?.company || shiftStore.pos_profile?.company || "POS Store",
+            storeName: settingsStore.settings?.store?.name || shiftStore.pos_profile?.company || 'Store',
             storeAddress: settingsStore.settings?.store?.address || shiftStore.pos_profile?.warehouse || "",
-            storeLogo: settingsStore.settings?.store?.logoUrl || "",
+            storeLogo: settingsStore.settings?.store?.logoUrl || shiftStore.pos_profile?.company_logo || '',
             footerMessage: settingsStore.settings?.receipt?.footerMessage || "",
             invoiceNo: invoiceResponse.name || transactionData.invoiceNo,
             invoiceId: invoiceResponse.name || transactionData.invoiceNo,

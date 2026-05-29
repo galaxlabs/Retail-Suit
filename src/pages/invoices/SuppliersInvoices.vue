@@ -341,6 +341,7 @@ import { ref, toRaw, computed, onMounted, watch } from 'vue'
 import { useShiftStore } from '@/stores/shift.js'
 import { useSuppliersStore } from '@/stores/suppliers.js'
 import { useBillsStore } from '@/stores/bills'
+import { useSettingsStore } from '@/stores/settings'
 import { formatDate, formatPrice } from '../../utils/formatters'
 import StatsCard from '../../layout/StatsCard.vue'
 import Sidebar from '../../layout/Sidebar.vue'
@@ -365,6 +366,8 @@ import {
     const pos_profile = computed(() => shiftStore.pos_profile || {})
 
     const SuppliersStore = useSuppliersStore()
+    const settingsStore = useSettingsStore()
+    const storeName = computed(() => settingsStore.settings?.store?.name || '')
 
     const billsStore = useBillsStore()
     const billStore = ref(null)

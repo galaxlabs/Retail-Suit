@@ -373,6 +373,7 @@
 
 import { ref, defineComponent, computed, onMounted, watch } from 'vue'
 import { useInvoicesStore } from '@/stores/invoices'
+import { useSettingsStore } from '@/stores/settings'
 import { formatNumber,formatDate, formatPrice } from '../../utils/formatters';
 import EyeIcon from '@/components/icons/EyeIcon.svg'
 import UserIcon from '@/components/icons/UserIcon.svg'
@@ -393,6 +394,8 @@ import Sidebar from '../../layout/Sidebar.vue';
 import { TrendingUp, Calendar, BarChart3, DollarSign } from 'lucide-vue-next'
 
     const invoicesStore = useInvoicesStore()
+    const settingsStore = useSettingsStore()
+    const storeName = computed(() => settingsStore.settings?.store?.name || '')
 
     // State
     const searchQuery = ref('')
