@@ -105,7 +105,6 @@ const showAddCustomerModal = ref(false)
 const shiftStore = useShiftStore()
 const pos_profile = computed(() => shiftStore.pos_profile || {})
 
-console.log("** pos_profile **",pos_profile.value.customer)
 // تحميل العملاء عند أول ظهور للصفحة فقط
 const loadCustomers = async () => {
   try {
@@ -132,7 +131,6 @@ const handleCustomerChange = () => {
     // اختيار عميل موجود
     const cust = customers.value.find(c => c.name === selectedCustomer.value)
     if (cust) {
-      console.log('Selected customer info:', cust)
       customer_id.value = cust.name
       customer_info.value = { ...cust }
       emit('customer-selected', cust)
@@ -143,18 +141,14 @@ const handleCustomerChange = () => {
 
 const handleCustomerUpdated = async (updatedCustomer) => {
  const res = await loadCustomers() // إعادة تحميل العملاء من السيرفر
-  console.log('🔄 loadCustomers:', res)
 
 
   const existingIndex = res.findIndex(c => c.name === updatedCustomer.name)
-  console.log('🔍 index:', existingIndex)
   if (existingIndex !== -1) {
 
     customers.value[existingIndex] = { ...updatedCustomer }
-    console.log('Customer updated in list at index:', existingIndex)
   } else {
     customers.value.push({ ...updatedCustomer })
-    console.log(' New customer added to list')
   }
 
   customer_id.value = updatedCustomer.name
@@ -167,7 +161,6 @@ const handleCustomerUpdated = async (updatedCustomer) => {
 const closeCustomerModal = () => {
   showAddCustomerModal.value = false
   const currentCustomer = shiftStore.$state.currentCustomer
-  console.log("currentCustomer",currentCustomer)
   if (currentCustomer?.name) {
     const cust = customers.value.find(c => c.name === currentCustomer.name)
     if (cust) {
@@ -198,7 +191,6 @@ watch(
 
         emit('customer-selected', defaultCustomer)
 
-        console.log('✅ Default customer set from POS Profile')
       }
     }
   },

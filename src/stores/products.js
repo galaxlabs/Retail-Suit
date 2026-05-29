@@ -73,9 +73,6 @@ export const useProductsStore = defineStore('products', {
     async loadFilterOptions() {
       try {
         const [pl, wh] = await Promise.all([getPriceLists(), getWarehouses()])
-                // console.log('➡️ POS Profile :', posProfileName)
-        console.log('➡️ **Price List**  :', pl)
-        console.log('➡️ **warehouses**    :', wh)
         this.priceLists = pl || []
         this.warehouses = wh || []
       } catch (e) {
@@ -86,7 +83,6 @@ export const useProductsStore = defineStore('products', {
     // ─── Main load ────────────────────────────────────────────────────
     async loadProductsFromFrappeDB() {
       try {
-        console.log('========== Load Products ==========')
         const shiftStore = useShiftStore()
         const hasLocalShift = Boolean(shiftStore.pos_profile && shiftStore.pos_opening_shift)
         const hasActiveShift = hasLocalShift ? true : await shiftStore.checkActiveShift()
@@ -106,10 +102,6 @@ export const useProductsStore = defineStore('products', {
         const posProfilePayload = typeof currentPOSProfile === "string" ? { name: posProfileName, selling_price_list: currentPriceList, customer: currentCustomer } : currentPOSProfile
         const selectedWarehouse = this.selectedWarehouse || null  // null → backend uses pos_profile default
 
-        console.log('➡️ POS Profile :', posProfileName)
-        console.log('➡️ Price List  :', currentPriceList)
-        console.log('➡️ Customer    :', currentCustomer)
-        console.log('➡️ Warehouse   :', selectedWarehouse)
 
         if (!posProfileName || !currentPriceList) {
           console.warn('⚠️ Missing required profile details!')
@@ -125,8 +117,6 @@ export const useProductsStore = defineStore('products', {
           selectedWarehouse
         )
 
-        console.log("AFTER API CALL", products)
-        console.log('✅ Products loaded:', products?.length)
         this.pageStart = 0
         this.hasMore = (products || []).length >= this.PAGE_SIZE
         this.error = null
@@ -261,7 +251,6 @@ export const useProductsStore = defineStore('products', {
       ]
       try {
         const Response = await createSampleItems(sample_products)
-        console.log("response createSampleItems", Response)
         window.$toast.success("✅ Sample items created successfully")
       } catch (error) {
         console.error("error", error)
@@ -273,7 +262,6 @@ export const useProductsStore = defineStore('products', {
       try {
         const response = await deleteSampleItems()
         window.$toast.success("Delete sample items Successfully")
-        console.log("response deleteSampleItems", response)
       } catch (error) {
         window.$toast.error("❌ Failed to Delete sample items")
         console.error("error deleting sample data", error)

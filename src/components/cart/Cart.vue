@@ -217,9 +217,7 @@ const clearSelectedInvoice = () => {
 // Handle quantity update
 const handleUpdateQuantity = (item_code, newQuantity, mode) => {
   // In return mode, validate against original quantity
-  console.log('handleUpdateQuantity')
   if (props.mode === 'return') {
-      console.log('handleUpdateQuantity mode : return')
     const item = cartStore.cart.find(i => i.item_code === item_code)
 
     if (item && item.originalQuantity && newQuantity > item.originalQuantity) {
@@ -231,7 +229,6 @@ const handleUpdateQuantity = (item_code, newQuantity, mode) => {
 
   }
   const result = cartStore.updateQuantity(item_code, newQuantity, props.mode)
-  console.log('handleUpdateQuantity result',result)
 }
 
 // Handle item removal
@@ -254,11 +251,11 @@ const confirmed = await Swal.fire({
   title: `<strong>${message}</strong>`,
   width: 800,
   padding: "3em",
-  color: "#fff",
-  background: "#0e7490 url('/images/trees.png') no-repeat right top",
+  color: "var(--text-main)",
+  background: "var(--card-bg)",
   backdrop: `
     rgba(0,0,0,0.4)
-    url("/images/nyan-cat.gif")
+    rgba(0,0,0,0.6)
     left top
     no-repeat
   `,
@@ -313,8 +310,6 @@ const handleCashUpdate = (amount) => {
 // Handle transaction submit
 
 const handletransactionData = async (paymentData) => {
-  console.log("7️⃣ Cart: handletransactionData called")
-  console.log("   Received:", paymentData)
 
 
   if (props.customerRequired && !shiftStore.$state.currentCustomer) {
@@ -325,7 +320,6 @@ const handletransactionData = async (paymentData) => {
   }
 
   try {
-    console.log("8️⃣ Cart: Building full data")
 
     let originalInvoice = null
 
@@ -343,14 +337,10 @@ const handletransactionData = async (paymentData) => {
       transactionType: props.mode === 'return' ? 'return' : 'sale'
     }
 
-    console.log("9️⃣ Cart: Full data ready")
-    console.log("   Full data:", fullData)
 
     // ✅ أطلع emit
-    console.log("🔟 Cart: Emitting to POS...")
     emit('submit', fullData)
 
-    console.log("1️⃣1️⃣ Cart: Emit done!")
 
   } catch (error) {
     console.error('❌ Cart Error:', error)
@@ -363,9 +353,6 @@ const handletransactionData = async (paymentData) => {
 watch(
   () => cartStore.cart,
   (newCart) => {
-    console.log('🟢 Cart updated - Cart.vue detected change')
-    console.log('   Cart items:', newCart)
-    console.log('   Cart length:', newCart.length)
 
     itemsCount.value = newCart.length
 
@@ -383,7 +370,6 @@ watch(
 watch(
   () => cartStore.itemsCount,
   (newCount) => {
-    console.log('🔔 Items count changed:', newCount)
   }
 )
 
@@ -391,7 +377,6 @@ watch(
 watch(
   () => props.mode,
   (newMode) => {
-    console.log('📌 Mode changed:', newMode)
   }
 )
 

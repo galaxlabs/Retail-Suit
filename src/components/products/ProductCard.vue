@@ -164,7 +164,6 @@ import { useProductsStore } from '@/stores/products'
 
 const store = useProductsStore()
 
-console.log("store.products[0]",store.products[0])
 
 const emit = defineEmits(['add-to-cart', 'remove-from-cart', 'view-details'])
 

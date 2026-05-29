@@ -377,7 +377,6 @@ const isDark = computed(() => settingsStore.settings.appearance.theme === 'dark'
         cartStore.clearCart() // تبدأ سلة جديدة
 
         showReturnInvoiceBox.value = false
-        console.log('Invoice selected:', invoice)
 
       if (invoice.returnable_items && invoice.returnable_items.length) {
 
@@ -407,22 +406,16 @@ const isDark = computed(() => settingsStore.settings.appearance.theme === 'dark'
 
     const handleCartSubmit = async (transactionData) => {
         try {
-          console.log('=== handleCartSubmit Called ===')
-          console.log('Transaction Data from Cart:', transactionData)
-          console.log('Mode:', transactionData.mode)
 
           // تحقق من نوع المعاملة
           const isReturn = transactionData.mode === 'return'
           const isPurchase = salesChannel.value === 'purchase'
 
           if (isPurchase) {
-            console.log('E28693 Processing PURCHASE transaction...')
             await handlePurchaseTransaction(transactionData)
           } else if (isReturn) {
-            console.log('🔄 Processing RETURN transaction...')
             await handleReturnTransaction(transactionData)
           } else {
-            console.log('💰 Processing SALE transaction...')
             await handleSaleTransaction(transactionData)
           }
 
@@ -497,8 +490,6 @@ const isDark = computed(() => settingsStore.settings.appearance.theme === 'dark'
 
     const handleReturnTransaction = async (returnData) => {
       try {
-        console.log('🔄 handleReturnTransaction: Starting...')
-        console.log('Return data:', returnData)
 
         // معالجة خاصة للواپسیات
         const returnTransaction = {
@@ -512,7 +503,6 @@ const isDark = computed(() => settingsStore.settings.appearance.theme === 'dark'
         // هنا ممكن تستدعي دالة خاصة للواپسیات
         // مثلاً: await invoicesStore.processReturn(returnTransaction)
 
-        console.log('✅ Return processed successfully')
 
         if (window.$toast) {
           window.$toast.success(
@@ -555,7 +545,6 @@ const isDark = computed(() => settingsStore.settings.appearance.theme === 'dark'
     // Handle return processed
     const handleReturnProcessed = async (returnData) => {
     try {
-      console.log('Processing return:', returnData)
 
       // Add return transaction to shift
       const returnTransaction = {
@@ -605,7 +594,6 @@ const isDark = computed(() => settingsStore.settings.appearance.theme === 'dark'
 
     // Handle return cancelled
     const handleReturnCancelled = () => {
-      console.log('Return cancelled')
       cartStore.clearCart()
       selectedInvoice.value = null
 
@@ -622,9 +610,6 @@ const isDark = computed(() => settingsStore.settings.appearance.theme === 'dark'
     }
 
     const handleShiftClosed = async (shift) => {
-      console.log('Shift closed:', shift)
-      console.log('Open Closing Shift modal')
-      console.log('shift user', shift.user)
 
       showOpenShiftModal.value = true
       // Clear current cart when shift closes
@@ -654,17 +639,13 @@ const isDark = computed(() => settingsStore.settings.appearance.theme === 'dark'
 
     // Proceed after print - SAVE INVOICE HERE
     const proceedAfterPrint = async (receiptDataParam) => {
-      console.log('=== proceedAfterPrint Called ===')
-      console.log('Receipt data:', receiptDataParam)
 
       try {
         // Save invoice to database
         const savedInvoice = await invoicesStore.saveInvoice(receiptDataParam)
 
-        console.log('✅ Invoice saved successfully:', savedInvoice)
 
         if (savedInvoice) {
-          console.log("✅ Saved invoice details:", {
             id: savedInvoice.id,
             receiptNo: savedInvoice.receiptNo,
             invoiceNo: receiptDataParam.invoiceNo
@@ -708,7 +689,6 @@ const isDark = computed(() => settingsStore.settings.appearance.theme === 'dark'
     // ✅ استخدم watchEffect - أقوى من watch
     watchEffect(() => {
       const color = settingsStore.settings.appearance.primaryColor
-      console.log('🎨 POS: Primary color is now:', color)
       // الـ component بتتحدث تلقائياً
     })
 
@@ -737,7 +717,6 @@ const isDark = computed(() => settingsStore.settings.appearance.theme === 'dark'
     watch(
       () => settingsStore.settings,
       (newSettings) => {
-        console.log('🎨 Settings changed:', newSettings)
         settingsStore.saveSettings()
       },
       { deep: true }
@@ -747,16 +726,13 @@ const isDark = computed(() => settingsStore.settings.appearance.theme === 'dark'
     watch(
       () => settingsStore.settings.appearance.primaryColor,
       (newColor) => {
-        console.log('🎨 Primary color changed to:', newColor)
         // الـ Sidebar بتتحدث تلقائياً
       }
     )
     watch(showReturnInvoiceBox, (v) => {
-      console.log('showReturnInvoiceBox:', v)
     })
 
     watch(isShiftOpen, (val) => {
-      console.log('POS saw isShiftOpen change to:', val)
     })
     const settings = computed(() => settingsStore.settings)
     const primaryColor = computed(() => {
