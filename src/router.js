@@ -59,6 +59,7 @@ import UserProfile from '@/pages/users/UserProfile.vue'
 import NotificationCenter from '@/pages/alerts/NotificationCenter.vue'
 
 import ShiftType from '@/pages/attendance/ShiftType.vue'
+import DashboardHome from '@/pages/DashboardHome.vue'
 import NonPage from '@/pages/NonPage.vue'
 import ForbiddenView from '@/pages/ForbiddenView.vue'
 
@@ -74,6 +75,7 @@ const routes = [
   { path: '/newpayment', name: 'Newpayment', component: NewPayment, meta: { requiresAuth: true } },
   { path: '/notification-center', name: 'NotificationCenter', component: NotificationCenter, meta: { requiresAuth: true } },
   { path: '/mobile-scan', name: 'MobileScan', component: MobileScan, meta: { requiresAuth: false, layout: 'none' } },
+  { path: '/dashboard', name: 'Dashboard', component: DashboardHome, meta: { requiresAuth: true } },
   { path: '/403', name: 'Forbidden', component: ForbiddenView },
   { path: '/inventory', name: 'inventory-dashboard', component: InventoryDashboard, meta: { title: 'Inventory Dashboard', requiresAuth: true } },
   { path: '/inventory/purchase-receipt', name: 'purchase-receipt', component: PurchaseReceipt, meta: { title: 'Purchase Receipts', requiresAuth: true } },
