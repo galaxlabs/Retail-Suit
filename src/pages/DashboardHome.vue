@@ -29,7 +29,8 @@
         </button>
       </div>
 
-      <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+
         <div class="rounded-xl p-5" :style="{ background: 'var(--card-bg)', border: '1px solid var(--card-border)' }">
           <p class="text-sm font-semibold mb-3" :style="{ color: 'var(--text-main)' }">Sales Overview</p>
           <div class="space-y-2">
@@ -51,7 +52,8 @@
         </div>
       </div>
 
-      <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+
         <div class="rounded-xl p-5" :style="{ background: 'var(--card-bg)', border: '1px solid var(--card-border)' }">
           <p class="text-sm font-semibold mb-3" :style="{ color: 'var(--text-main)' }">Top Items (Today)</p>
           <div v-if="topItems.length === 0" class="text-sm" :style="{ color: 'var(--text-muted)' }">No sales today</div>
@@ -75,7 +77,8 @@
 
       <div class="rounded-xl p-5" :style="{ background: 'var(--card-bg)', border: '1px solid var(--card-border)' }">
         <p class="text-sm font-semibold mb-3" :style="{ color: 'var(--text-main)' }">Supplier Purchases (This Month)</p>
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+
           <div v-for="sup in purchases.top_suppliers" :key="sup.name" class="rounded-lg p-3" :style="{ background: 'var(--item-bg)', border: '1px solid var(--item-border)' }">
             <p class="text-sm font-semibold truncate" :style="{ color: 'var(--text-main)' }">{{ sup.name }}</p>
             <p class="text-lg font-bold mt-1" :style="{ color: primaryColor }">{{ formatPrice(sup.total) }}</p>
@@ -153,5 +156,16 @@ const loadDashboard = async () => {
     console.error('Dashboard load failed:', e)
   } finally { isLoading.value = false }
 }
+const activeFilter = ref('today')
+const quickFilters = [
+  { key: 'today', label: 'Today' },
+  { key: 'yesterday', label: 'Yesterday' },
+  { key: 'week', label: 'This Week' },
+  { key: 'month', label: 'This Month' },
+  { key: 'last_month', label: 'Last Month' },
+  { key: 'year', label: 'This Year' },
+]
+const applyQuickFilter = (key) => { activeFilter.value = key }
+
 onMounted(() => loadDashboard())
 </script>

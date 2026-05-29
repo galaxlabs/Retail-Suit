@@ -43,6 +43,14 @@ export const formatPrice = (price, currency) => {
 
     const { locale } = currencyMap[currentCurrency] || { locale: 'en-US' }
 
+    // Use custom symbol for PKR to avoid Intl formatting issues
+    if (currentCurrency === 'PKR') {
+      const pkrLocale = 'en-PK'
+      return 'Rs ' + new Intl.NumberFormat(pkrLocale, {
+        minimumFractionDigits: 0,
+        maximumFractionDigits: 0
+      }).format(price || 0)
+    }
     return new Intl.NumberFormat(locale, {
       style: 'currency',
       currency: currentCurrency,
