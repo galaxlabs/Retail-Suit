@@ -244,6 +244,12 @@ const filterCustomers = () => { showDropdown.value = true }
 
 onMounted(async () => {
   const list = await loadCustomers()
+  // Default to Walk-in Customer if nothing selected
+  if (!selectedCustomer.value && !shiftStore.$state.currentCustomer?.name) {
+    selectedCustomer.value = 'Walk-in Customer'
+    shiftStore.setCustomer({ name: 'Walk-in Customer', customer_name: 'Walk-in Customer' })
+    emit('customer-selected', { name: 'Walk-in Customer', customer_name: 'Walk-in Customer' })
+  }
   const savedCustomer = shiftStore.$state.currentCustomer
   if (savedCustomer?.name && list) {
     const exists = list.find(c => c.name === savedCustomer.name)

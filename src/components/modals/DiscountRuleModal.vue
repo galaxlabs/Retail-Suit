@@ -381,40 +381,40 @@ const emit = defineEmits(['save', 'close'])
   const validateForm = () => {
     if (props.ruleType === 'quantity') {
       if (!form.value.minQty && form.value.minQty !== 0) {
-        alert('الرجاء إدخال مقدار الدنيا')
+        alert('براہ کرم کم از کم مقدار درج کریں')
         return false
       }
       if (!form.value.maxQty) {
-        alert('الرجاء إدخال مقدار العليا')
+        alert('براہ کرم زیادہ سے زیادہ مقدار درج کریں')
         return false
       }
       if (form.value.minQty > form.value.maxQty) {
-        alert('مقدار الدنيا يجب أن تكون أقل سے مقدار العليا')
+        alert('کم از کم مقدار زیادہ سے زیادہ مقدار سے کم ہونی چاہیے')
         return false
       }
     }
 
     if (props.ruleType === 'tiered') {
       if (!form.value.name) {
-        alert('الرجاء إدخال اصول کا نام')
+        alert('براہ کرم اصول کا نام درج کریں')
         return false
       }
     }
 
     if (props.ruleType === 'category') {
       if (!form.value.category) {
-        alert('براہ کرم کیٹیگری سےتخب کریں')
+        alert('براہ کرم کیٹیگری منتخب کریں')
         return false
       }
     }
 
     if (props.ruleType === 'time') {
       if (!form.value.name) {
-        alert('الرجاء إدخال نام')
+        alert('براہ کرم نام درج کریں')
         return false
       }
       if (form.value.days.length === 0) {
-        alert('براہ کرم کم از کم ایک دن سےتخب کریں')
+        alert('براہ کرم کم از کم ایک دن منتخب کریں')
         return false
       }
     }

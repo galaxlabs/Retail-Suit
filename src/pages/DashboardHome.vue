@@ -29,23 +29,13 @@
         </button>
       </div>
 
-      <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
         <div class="rounded-xl p-5" :style="{ background: 'var(--card-bg)', border: '1px solid var(--card-border)' }">
           <p class="text-sm font-semibold mb-3" :style="{ color: 'var(--text-main)' }">Sales Overview</p>
           <div class="space-y-2">
             <div v-for="row in salesBreakdown" :key="row.key" class="flex justify-between text-sm">
               <span :style="{ color: 'var(--text-muted)' }">{{ row.label }}</span>
               <span class="font-semibold" :style="{ color: 'var(--text-main)' }">{{ formatPrice(row.value) }}</span>
-            </div>
-          </div>
-        </div>
-
-        <div class="rounded-xl p-5" :style="{ background: 'var(--card-bg)', border: '1px solid var(--card-border)' }">
-          <p class="text-sm font-semibold mb-3" :style="{ color: 'var(--text-main)' }">Profit</p>
-          <div class="space-y-2">
-            <div v-for="row in profitBreakdown" :key="row.key" class="flex justify-between text-sm">
-              <span :style="{ color: 'var(--text-muted)' }">{{ row.label }}</span>
-              <span class="font-semibold" :style="{ color: row.value >= 0 ? 'var(--icon-color-green)' : 'var(--warning-border)' }">{{ formatPrice(row.value) }}</span>
             </div>
           </div>
         </div>
@@ -85,7 +75,7 @@
 
       <div class="rounded-xl p-5" :style="{ background: 'var(--card-bg)', border: '1px solid var(--card-border)' }">
         <p class="text-sm font-semibold mb-3" :style="{ color: 'var(--text-main)' }">Supplier Purchases (This Month)</p>
-        <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
           <div v-for="sup in purchases.top_suppliers" :key="sup.name" class="rounded-lg p-3" :style="{ background: 'var(--item-bg)', border: '1px solid var(--item-border)' }">
             <p class="text-sm font-semibold truncate" :style="{ color: 'var(--text-main)' }">{{ sup.name }}</p>
             <p class="text-lg font-bold mt-1" :style="{ color: primaryColor }">{{ formatPrice(sup.total) }}</p>
@@ -142,7 +132,7 @@ const netFlow = computed(() => cashIn.value - cashOut.value)
 const kpiCards = computed(() => [
   { label: 'Sales Today', value: formatPrice(dashboard.value.sales?.today || 0), bg: 'var(--info-bg)', sub: (dashboard.value.sales?.invoice_count_today || 0) + ' invoices' },
   { label: 'Sales Month', value: formatPrice(dashboard.value.sales?.this_month || 0), bg: 'var(--card-bg)', sub: null },
-  { label: 'Profit Month', value: formatPrice(dashboard.value.profit?.this_month?.profit || 0), bg: 'var(--card-bg)', sub: (dashboard.value.profit?.this_month?.margin_pct || 0) + '% margin', subColor: 'var(--icon-color-green)' },
+
   { label: 'Cash Balance', value: formatPrice(cashBalance.value), bg: cashBalance.value >= 0 ? 'var(--info-bg)' : 'var(--warning-bg)', sub: null },
 ])
 

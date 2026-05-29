@@ -206,11 +206,11 @@ import { ref, watch } from 'vue'
 
     const handleSubmit = () => {
       if (!form.value.name) {
-        alert('الرجاء إدخال اسم الدیکھیں')
+        alert('براہ کرم پروموشن کا نام درج کریں')
         return
       }
       if (!form.value.type) {
-        alert('الرجاء اختيار نوع الدیکھیں')
+        alert('براہ کرم پروموشن کی قسم منتخب کریں')
         return
       }
       emit('save', { ...form.value })

@@ -100,7 +100,7 @@ export const useShiftStore = defineStore('shift', {
 
   actions: {
     async setCustomer(customer) {
-      this.currentCustomer = customer
+      this.currentCustomer = customer || { name: 'Walk-in Customer', customer_name: 'Walk-in Customer' }
     },
     async setSupplier(supplier) {
       this.currentCustomer = supplier

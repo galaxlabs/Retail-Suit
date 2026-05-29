@@ -185,7 +185,7 @@ import { ref, watch } from 'vue'
 
     const handleSubmit = () => {
       if (!form.value.code) {
-        alert('الرجاء إدخال کوپن کوڈ')
+        alert('براہ کرم کوپن کوڈ درج کریں')
         return
       }
       emit('save', { ...form.value })

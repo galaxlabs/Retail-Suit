@@ -341,7 +341,7 @@ const receiptContent = ref(null)
           URL.revokeObjectURL(url)
         } catch (error) {
           console.error('Save failed:', error)
-          alert('Save failed. Please try again.')
+          window.$toast?.error('Save failed. Please try again.')
         } finally {
           isProcessing.value = false
         }
@@ -351,7 +351,7 @@ const receiptContent = ref(null)
         if (isProcessing.value) return
 
         if (!props.receiptData?.isSaved) {
-          alert('پرنٹ سے پہلے براہِ کرم انوائس محفوظ کریں۔')
+          window.$toast?.warning('پرنٹ سے پہلے براہِ کرم انوائس محفوظ کریں۔')
           return
         }
 
@@ -365,7 +365,7 @@ const receiptContent = ref(null)
           }
         } catch (error) {
           console.error('Print failed:', error)
-          alert('پرنٹ ناکام ہوگیا۔ براہِ کرم دوبارہ کوشش کریں۔')
+          window.$toast?.error('پرنٹ ناکام ہوگیا۔ براہِ کرم دوبارہ کوشش کریں۔')
         } finally {
           setTimeout(() => {
             isProcessing.value = false

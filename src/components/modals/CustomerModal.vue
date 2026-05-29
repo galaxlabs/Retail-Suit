@@ -242,7 +242,7 @@ import { ref, watch } from 'vue'
     const handleSubmit = () => {
       // Validation
       if (!form.value.name || !form.value.phone) {
-        alert('براہ کرم مطلوبہ فیلڈز پُر کریں')
+        window.$toast?.warning('براہ کرم مطلوبہ فیلڈز پُر کریں')
         return
       }
 
