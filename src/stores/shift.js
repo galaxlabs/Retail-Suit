@@ -102,6 +102,9 @@ export const useShiftStore = defineStore('shift', {
     async setCustomer(customer) {
       this.currentCustomer = customer
     },
+    async setSupplier(supplier) {
+      this.currentCustomer = supplier
+    },
     async getAvailablePosprofiles(company, currency) {
       console.log("this.pos_profile.posa_allow_mpesa_reconcile_payments", this.pos_profile.posa_allow_mpesa_reconcile_payments)
       if (!this.pos_profile.posa_allow_mpesa_reconcile_payments) return;

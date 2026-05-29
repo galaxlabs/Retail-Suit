@@ -11,26 +11,43 @@
         background: 'var(--input-bg)'
       }"
     >
-      <!-- Customer Select -->
-      <select
-        v-model="selectedCustomer"
-        @change="handleCustomerChange"
-        class="flex-grow p-2 px-3 outline-none cursor-pointer transition-all"
-        :style="{
-          background: 'var(--input-bg)',
-          color: 'var(--text-main)',
-          border: 'none'
-        }"
-      >
-        <option value="">+ Create New Customer</option>
-        <option
-          v-for="cust in customers"
-          :key="cust.name"
-          :value="cust.name"
+      <!-- Customer Search -->
+      <div class="flex flex-col flex-grow">
+        <input
+          v-model="searchQuery"
+          @input="filterCustomers"
+          type="text"
+          class="p-2 px-3 outline-none text-sm"
+          :style="{
+            background: 'var(--input-bg)',
+            color: 'var(--text-main)',
+            border: 'none'
+          }"
+          placeholder="Search customer..."
+          @focus="showDropdown = true"
+        />
+        <select
+          v-model="selectedCustomer"
+          @change="handleCustomerChange"
+          size="4"
+          class="flex-grow p-2 px-3 outline-none cursor-pointer transition-all text-xs"
+          :style="{
+            background: 'var(--input-bg)',
+            color: 'var(--text-main)',
+            border: 'none',
+            display: showDropdown ? 'block' : 'none'
+          }"
         >
-          {{ cust.customer_name }}
-        </option>
-      </select>
+          <option value="">+ Create New Customer</option>
+          <option
+            v-for="cust in filteredCustomers"
+            :key="cust.name"
+            :value="cust.name"
+          >
+            {{ cust.customer_name }}
+          </option>
+        </select>
+      </div>
 
       <!-- Add Customer Button -->
       <button
@@ -104,6 +121,17 @@ const showAddCustomerModal = ref(false)
 
 const shiftStore = useShiftStore()
 const pos_profile = computed(() => shiftStore.pos_profile || {})
+
+const searchQuery = ref('')
+const showDropdown = ref(false)
+const filteredCustomers = computed(() => {
+  if (!searchQuery.value) return customers.value
+  const q = searchQuery.value.toLowerCase()
+  return customers.value.filter(c =>
+    c.customer_name?.toLowerCase().includes(q) ||
+    c.name?.toLowerCase().includes(q)
+  )
+})
 
 // تحميل العملاء عند أول ظهور للصفحة فقط
 const loadCustomers = async () => {
@@ -211,6 +239,8 @@ watch(
 //   },
 //   { immediate: true }
 // )
+
+const filterCustomers = () => { showDropdown.value = true }
 
 onMounted(async () => {
   const list = await loadCustomers()
