@@ -41,10 +41,12 @@ if (!API_BASE_URL && isVercelHost) {
 // Browser should use session cookies by default.
 
 const clearSession = () => {
+  // Prevent redirect loop
+  if (window.location.hash.startsWith("#/login")) return
   localStorage.removeItem("api_key")
   localStorage.removeItem("api_secret")
   sessionStorage.setItem("session_expired", "1")
-  window.location.href = window.location.origin + (window.location.pathname.startsWith("/retail_suite/") ? "/retail_suite/" : "/") + "#/login"
+  window.location.hash = "#/login"
 }
 
 const USE_BROWSER_TOKEN_AUTH = (import.meta.env.VITE_USE_API_TOKEN === 'true') || (Boolean(API_BASE_URL) && (new URL(API_BASE_URL)).hostname !== window.location.hostname)
