@@ -114,7 +114,8 @@ window.fetch = (input, init = {}) => {
 
       return fetchPromise
         .then(function (resp) {
-          if (resp.status === 401 || resp.status === 403) {
+          // Only clear session for non-public endpoints
+          if (!isPublicAuthEndpoint(requestUrl) && resp.status === 401) {
             clearSession()
             return Promise.reject(new Error("Session expired"))
           }
@@ -156,18 +157,9 @@ axios.interceptors.response.use(
   (response) => response,
   (error) => {
     const status = error?.response?.status
-    if (status === 401 || status === 403) {
-      const msg = error?.response?.data
-      if (msg && (String(msg).includes("session") || String(msg).includes("expired") || String(msg).includes("invalid"))) {
-        clearSession()
-        return Promise.reject(error)
-      }
-      if (error?.response?.data?.exc_type === "PermissionError" &&
-          !error?.config?.url?.includes("ping") &&
-          !error?.config?.url?.includes("login")) {
-        clearSession()
-        return Promise.reject(error)
-      }
+    if (status === 401) {
+      clearSession()
+      return Promise.reject(error)
     }
     return Promise.reject(error)
   }
