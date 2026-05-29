@@ -2117,3 +2117,18 @@ export const getCompanyBranding = async (companyName) => {
   }
 }
 
+
+// ================================================================
+// Create Purchase Receipt from POS
+// ================================================================
+export const createPurchaseReceipt = async (payload) => {
+  try {
+    const response = await call('retail.retail.api.purchase_receipt.create_purchase_receipt', {
+      data: JSON.stringify(payload)
+    })
+    return response?.message || response?.data || response
+  } catch (error) {
+    console.error('createPurchaseReceipt error:', error)
+    throw error
+  }
+}

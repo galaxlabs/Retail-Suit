@@ -114,10 +114,12 @@
         </div>
       </div>
 
-      <!-- Customer Selector -->
-      <CustomerSection @customer-selected="handleCustomerSelected" />
+      <!-- Customer / Supplier Selector -->
+      <SupplierSection v-if="purchaseMode" @supplier-selected="handleSupplierSelected" />
+      <CustomerSection v-else @customer-selected="handleCustomerSelected" />
       <div class="px-4 pt-2 text-xs" :style="{ color: 'var(--text-muted)' }">
-        {{ salesChannel === 'wholesale' ? 'Wholesale: select customer before checkout' : 'Retail: customer optional for quick billing' }}
+        <template v-if="purchaseMode">Purchase: select supplier before creating receipt</template>
+        <template v-else>{{ salesChannel === 'wholesale' ? 'Wholesale: select customer before checkout' : 'Retail: customer optional for quick billing' }}</template>
       </div>
 
       <!-- Cart Items List -->
@@ -140,6 +142,7 @@
       v-if="cartStore.cart.length > 0 && !cartStore.isReturn"
       :mode="mode"
       :selected-invoice="selectedInvoice"
+      :purchase-mode="purchaseMode"
       @submit="handletransactionData"
       @cash-update="handleCashUpdate"
     />
@@ -159,6 +162,7 @@ import PaymentSection from './PaymentSection.vue'
 import ReturnSection from './ReturnSection.vue'
 import { formatDate } from '../../utils/formatters'
 import CustomerSection from './CustomerSection.vue'
+import SupplierSection from './SupplierSection.vue'
 import { useCartStore } from '@/stores/cart'
 import { useShiftStore } from '@/stores/shift'
 import { useSettingsStore } from '@/stores/settings'
@@ -179,6 +183,10 @@ const props = defineProps({
     default: 'retail'
   },
   customerRequired: {
+    type: Boolean,
+    default: false
+  },
+  purchaseMode: {
     type: Boolean,
     default: false
   }

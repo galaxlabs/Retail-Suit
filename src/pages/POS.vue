@@ -42,11 +42,25 @@
                 Retail
               </button>
               <button
+                @click="switchSalesChannel('retail')"
+                class="px-4 py-2 text-sm font-medium rounded-md transition"
+                :style="salesChannel === 'retail' ? `background: ${primaryColor}; color: #fff;` : 'color: var(--text-main);'"
+              >
+                Retail
+              </button>
+              <button
                 @click="switchSalesChannel('wholesale')"
                 class="px-4 py-2 text-sm font-medium rounded-md transition"
                 :style="salesChannel === 'wholesale' ? `background: ${primaryColor}; color: #fff;` : 'color: var(--text-main);'"
               >
                 Wholesale
+              </button>
+              <button
+                @click="switchSalesChannel('purchase')"
+                class="px-4 py-2 text-sm font-medium rounded-md transition"
+                :style="salesChannel === 'purchase' ? `background: ${primaryColor}; color: #fff;` : 'color: var(--text-main);'"
+              >
+                Purchase
               </button>
             </div>
             <input
@@ -77,6 +91,7 @@
             :mode="activeMenu === 'return' ? 'return' : 'sale'"
             :selected-invoice="selectedInvoice"
             :sales-channel="salesChannel"
+            :purchase-mode="salesChannel === 'purchase'"
             :customer-required="salesChannel === 'wholesale'"
             @submit="handleCartSubmit"
             @clear-invoice="handleClearInvoice"
@@ -182,6 +197,7 @@
 <script setup>
 import { ref, onMounted, watch, watchEffect, reactive, computed } from 'vue'
 import { createResource } from 'frappe-ui'
+import { createPurchaseReceipt } from '@/services/api'
 import { storeToRefs } from 'pinia'
 import ShiftControl from '@/components/shift/ShiftControl.vue'
 import Sidebar from '@/layout/Sidebar.vue'
@@ -397,8 +413,12 @@ const isDark = computed(() => settingsStore.settings.appearance.theme === 'dark'
 
           // تحقق من نوع المعاملة
           const isReturn = transactionData.mode === 'return'
+          const isPurchase = salesChannel.value === 'purchase'
 
-          if (isReturn) {
+          if (isPurchase) {
+            console.log('E28693 Processing PURCHASE transaction...')
+            await handlePurchaseTransaction(transactionData)
+          } else if (isReturn) {
             console.log('🔄 Processing RETURN transaction...')
             await handleReturnTransaction(transactionData)
           } else {
