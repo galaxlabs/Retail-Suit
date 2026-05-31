@@ -529,14 +529,18 @@ import { TrendingUp, Calendar, BarChart3, DollarSign } from 'lucide-vue-next'
     }
 
     const printInvoice = (invoice) => {
-      // Create a print window with the invoice data
-      const printWindow = window.open('', '_blank')
       const printContent = generatePrintContent(invoice)
-
+      const printWindow = window.open('', '_blank', 'width=800,height=600')
+      if (!printWindow) {
+        window.$toast?.error('Please allow popups to print invoices')
+        return
+      }
+      printWindow.document.open()
       printWindow.document.write(printContent)
       printWindow.document.close()
-      printWindow.print()
-      printWindow.close()
+      printWindow.focus()
+      printWindow.onafterprint = () => printWindow.close()
+      setTimeout(() => printWindow.print(), 500)
     }
 
     const generatePrintContent = (invoice) => {
