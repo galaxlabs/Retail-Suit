@@ -529,7 +529,7 @@ import {
         </head>
         <body>
           <div class="header">
-            <h2>{{ storeName || 'Retail Suite' }} - Supplier Bill</h2>
+            <h2>${storeName.value || 'Retail Suite'} - Supplier Bill</h2>
           </div>
 
           <div class="bill-info">

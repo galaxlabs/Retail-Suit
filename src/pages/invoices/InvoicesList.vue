@@ -558,8 +558,8 @@ import { TrendingUp, Calendar, BarChart3, DollarSign } from 'lucide-vue-next'
         </head>
         <body>
           <div class="header">
-            <h2>{{ storeName || 'Retail Suite' }}</h2>
-            <p>{{ invoiceType || 'Invoice / Receipt' }}</p>
+            <h2>${storeName.value || 'Retail Suite'}</h2>
+            <p>${invoiceType || 'Invoice / Receipt'}</p>
           </div>
 
           <div class="invoice-info">
