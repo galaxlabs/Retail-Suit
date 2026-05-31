@@ -72,7 +72,7 @@ const normalizePayment = (summary = {}) => {
     if (salesChannel === 'wholesale') {
       throw new Error('ہول سیل فروخت کے لیے کسٹمر سےتخب کرنا ضروری ہے۔')
     }
-    return shiftStore.pos_profile?.customer || 'Walk-in Customer'
+    return shiftStore.pos_profile?.customer || 'Walking Customer'
   }
 const resolvePaymentMethod = (shiftStore, paymentMethod) => {
     const direct = String(paymentMethod || '').trim()

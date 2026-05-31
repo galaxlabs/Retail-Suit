@@ -246,9 +246,9 @@ onMounted(async () => {
   const list = await loadCustomers()
   // Default to Walk-in Customer if nothing selected
   if (!selectedCustomer.value && !shiftStore.$state.currentCustomer?.name) {
-    selectedCustomer.value = 'Walk-in Customer'
-    shiftStore.setCustomer({ name: 'Walk-in Customer', customer_name: 'Walk-in Customer' })
-    emit('customer-selected', { name: 'Walk-in Customer', customer_name: 'Walk-in Customer' })
+    selectedCustomer.value = 'Walking Customer'
+    shiftStore.setCustomer({ name: 'Walking Customer', customer_name: 'Walking Customer' })
+    emit('customer-selected', { name: 'Walking Customer', customer_name: 'Walking Customer' })
   }
   const savedCustomer = shiftStore.$state.currentCustomer
   if (savedCustomer?.name && list) {
