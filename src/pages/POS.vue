@@ -544,6 +544,53 @@ const isDark = computed(() => settingsStore.settings.appearance.theme === 'dark'
       }
     }
 
+    const handlePurchaseTransaction = async (transactionData) => {
+      try {
+        const supplier = shiftStore.currentCustomer?.name || transactionData.customer?.name || transactionData.supplier
+        if (!supplier) {
+          if (window.$toast) window.$toast.error('Please select a supplier first')
+          return
+        }
+
+        const payload = {
+          supplier: supplier,
+          posting_date: new Date().toISOString().slice(0, 10),
+          items: (transactionData.items || []).map((item) => ({
+            item_code: item.item_code,
+            item_name: item.item_name,
+            qty: item.qty,
+            rate: item.rate,
+            uom: item.uom || 'Nos',
+            total: (item.qty || 0) * (item.rate || 0),
+          })),
+          notes: '',
+          discount_rate: transactionData.summary?.discount || 0,
+        }
+
+        const result = await createPurchaseReceipt(payload)
+        if (result.status !== 'success') {
+          throw new Error(result.message || 'Failed to create purchase receipt')
+        }
+
+        receiptData.value = {
+          ...transactionData,
+          storeName: settingsStore.settings?.store?.name || shiftStore.pos_profile?.company || 'Store',
+          storeAddress: settingsStore.settings?.store?.address || shiftStore.pos_profile?.warehouse || '',
+          storeLogo: settingsStore.settings?.store?.logoUrl || shiftStore.pos_profile?.company_logo || '',
+          invoiceNo: result.name || result.data?.name,
+          receiptNo: result.name || result.data?.name,
+          isFastMode: false,
+          isSaved: true,
+        }
+        showReceiptModal.value = true
+
+        if (window.$toast) window.$toast.success('Purchase receipt created: ' + (result.name || ''))
+      } catch (error) {
+        console.error('Error in handlePurchaseTransaction:', error)
+        if (window.$toast) window.$toast.error(error.message || 'Failed to create purchase receipt')
+      }
+    }
+
     // Save Copy
     const handleReceiptSaved = async () => {
       if (window.$toast) {
